@@ -286,6 +286,7 @@ std::ostream & operator<<(std::ostream & os, const DenseMatrix<ValueType> & obj)
     return os;
 }
 
+
 /*
     Helper struct for DenseMatrix with strings, represents a char buffer.
     Needs to keep numCells from original DenseMatrix to manage modifications from views.

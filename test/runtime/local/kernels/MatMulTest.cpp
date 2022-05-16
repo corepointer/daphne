@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "run_tests.h"
+
 #include <runtime/local/datagen/GenGivenVals.h>
 #include <runtime/local/datastructures/DenseMatrix.h>
 #include <runtime/local/kernels/CheckEq.h>
@@ -33,7 +35,9 @@ void checkMatMul(const DT * lhs, const DT * rhs, const DT * exp, bool transa = f
     DataObjectFactory::destroy(res);
 }
 
-TEMPLATE_PRODUCT_TEST_CASE("MatMul", TAG_KERNELS, (DenseMatrix), (float, double)) {
+TEMPLATE_PRODUCT_TEST_CASE("MatMul", TAG_KERNELS, (DenseMatrix), (float, double, int32_t, int64_t)) {
+    auto dctx = setupContextAndLogger();
+
     using DT = TestType;
     
     auto m0 = genGivenVals<DT>(3, {

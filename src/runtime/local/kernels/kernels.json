@@ -1795,6 +1795,13 @@
                     [["DenseMatrix", "double"], ["DenseMatrix", "double"], ["DenseMatrix", "double"]]
                 ]
             },
+            {
+                "name":  ["CPP"],
+                "instantiations": [
+                    [["DenseMatrix", "int32_t"], ["DenseMatrix", "int32_t"], ["DenseMatrix", "int32_t"]],
+                    [["DenseMatrix", "int64_t"], ["DenseMatrix", "int64_t"], ["DenseMatrix", "int64_t"]]
+                ]
+            },
              {
                 "name":  ["FPGAOPENCL"],
                 "instantiations": [
