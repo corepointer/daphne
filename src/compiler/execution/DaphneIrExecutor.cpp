@@ -181,6 +181,10 @@ bool DaphneIrExecutor::runPasses(mlir::ModuleOp module) {
         pm.addNestedPass<mlir::func::FuncOp>(mlir::daphne::createManageObjRefsPass());
     if (userConfig_.explain_obj_ref_mgnt)
         pm.addPass(mlir::daphne::createPrintIRPass("IR after managing object references:"));
+#ifdef USE_ONEAPI
+        if(userConfig_.use_oneapi)
+            pm.addNestedPass<mlir::FuncOp>(mlir::daphne::createMarkONEAPIOpsPass(userConfig_));
+#endif
 
     pm.addNestedPass<mlir::func::FuncOp>(mlir::daphne::createRewriteToCallKernelOpPass(userConfig_, usedLibPaths));
     if (userConfig_.explain_kernels)
@@ -234,9 +238,18 @@ std::unique_ptr<mlir::ExecutionEngine> DaphneIrExecutor::createExecutionEngine(m
                                          "` is needed for some kernel, but the file does not exist");
         }
 
-    registerLLVMDialectTranslation(context_);
-    // module.dump();
-    mlir::ExecutionEngineOptions options;
+
+#ifdef USE_ONEAPI
+        if(userConfig_.use_oneapi) {
+            if(userConfig_.libdir.empty()) {
+                sharedLibRefs.push_back("build/oneapi-kernels/libONEAPIKernels.so");
+            }
+        }
+#endif
+
+        registerLLVMDialectTranslation(context_);
+        // module.dump();
+        mlir::ExecutionEngineOptions options;
     options.llvmModuleBuilder = nullptr;
     options.transformer = optPipeline;
     options.jitCodeGenOptLevel = llvm::CodeGenOpt::Level::Default;

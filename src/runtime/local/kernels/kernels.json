@@ -3466,7 +3466,7 @@
         },
         "api": [
             {
-                "name": ["CUDA", "CPP"],
+                "name": ["CPP", "CUDA", "ONEAPI"],
                 "instantiations": [
                     [
                         ["DenseMatrix", "float"],

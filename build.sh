@@ -308,7 +308,6 @@ function cleanDeps {
     local files=(
         "${thirdpartyFlagsDir}/"*".install."*".success"
         "${llvmCommitFilePath}")
-
     clean dirs files
 }
 
@@ -456,6 +455,7 @@ BUILD_IO_URING="-DUSE_IO_URING=OFF"
 BUILD_PAPI="-DUSE_PAPI=ON"
 WITH_DEPS=1
 WITH_SUBMODULE_UPDATE=1
+BUILD_ONEAPI="-DUSE_ONEAPI=OFF"
 
 while [[ $# -gt 0 ]]; do
     key=$1
@@ -528,9 +528,13 @@ while [[ $# -gt 0 ]]; do
     -ns | --no-submodule-update)
         WITH_SUBMODULE_UPDATE=0
         ;;
-      *)
-        unknown_options="${unknown_options} ${key}"
-        ;;
+      --oneapi)
+            echo using OneAPI
+            export BUILD_ONEAPI="-DUSE_ONEAPI=ON"
+            ;;
+        *)
+            unknown_options="${unknown_options} ${key}"
+            ;;
     esac
 done
 
@@ -719,7 +723,7 @@ if [ $WITH_DEPS -gt 0 ]; then
     catch2ZipName="v$catch2Version.zip"
     catch2SingleHeaderInstalledPath=$installPrefix/include/catch.hpp
     dep_catch2=("catch2_v${catch2Version}" "v1")
-    
+
     if ! is_dependency_installed "${dep_catch2[@]}"; then
         daphne_msg "Get catch2 version ${catch2Version}"
         mkdir -p "${thirdpartyPath}/${catch2Name}"
@@ -1109,9 +1113,16 @@ daphne_msg "Build Daphne"
 
 cmake -S "$projectRoot" -B "$daphneBuildDir" -G Ninja -DANTLR_VERSION="$antlrVersion" \
     -DCMAKE_PREFIX_PATH="$installPrefix" \
-    $BUILD_CUDA $BUILD_FPGAOPENCL $BUILD_DEBUG $BUILD_MPI $BUILD_HDFS $BUILD_PAPI
+    $BUILD_CUDA $BUILD_FPGAOPENCL $BUILD_DEBUG $BUILD_MPI $BUILD_HDFS $BUILD_PAPI $BUILD_ONEAPI
 
 cmake --build "$daphneBuildDir" --target "$target"
+
+# build OneAPI library in a separate step because of the changed CXX compiler
+if [[ $BUILD_ONEAPI = *"ON"* ]]; then
+  CXX=dpcpp cmake -S $projectRoot/src/runtime/local/kernels/ONEAPI -B "$daphneBuildDir"/oneapi-kernels -G Ninja \
+  -DCMAKE_PREFIX_PATH="$daphneBuildDir" $BUILD_ONEAPI
+  cmake --build "$daphneBuildDir"/oneapi-kernels
+fi
 
 build_ts_end=$(date +%s%N)
 daphne_msg "Successfully built Daphne://${target} (took $(printableTimestamp $((build_ts_end - build_ts_begin))))"

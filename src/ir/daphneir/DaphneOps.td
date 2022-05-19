@@ -33,6 +33,7 @@ include "ir/daphneir/DaphneTypeAdaptationTraits.td"
 include "ir/daphneir/DaphneTypeInferenceTraits.td"
 include "ir/daphneir/CUDASupport.td"
 include "ir/daphneir/FPGAOPENCLSupport.td"
+include "ir/daphneir/ONEAPISupport.td"
 
 include "mlir/Dialect/LLVMIR/LLVMTypes.td"
 include "mlir/Interfaces/SideEffectInterfaces.td"
@@ -215,7 +216,7 @@ def Daphne_MatMulOp : Daphne_Op<"matMul", [
     DeclareOpInterfaceMethods<VectorizableOpInterface>,
     DataTypeMat, ValueTypeFromArgs,
     DeclareOpInterfaceMethods<InferShapeOpInterface>,
-    DeclareOpInterfaceMethods<InferSparsityOpInterface>, CUDASupport, FPGAOPENCLSupport,
+    DeclareOpInterfaceMethods<InferSparsityOpInterface>, CUDASupport, FPGAOPENCLSupport, ONEAPISupport,
     CastFirstTwoArgsToResType, NoMemoryEffect
 ]> {
     let arguments = (ins MatrixOf<[NumScalar]>:$lhs, MatrixOf<[NumScalar]>:$rhs, BoolScalar:$transa, BoolScalar:$transb);
@@ -1012,7 +1013,7 @@ def Daphne_CTableOp : Daphne_Op<"ctable", [
 def Daphne_SyrkOp : Daphne_Op<"syrk", [
     TypeFromFirstArg,
     DeclareOpInterfaceMethods<VectorizableOpInterface>,
-    NumRowsFromArgNumCols, NumColsFromArg, CUDASupport,FPGAOPENCLSupport, 
+    NumRowsFromArgNumCols, NumColsFromArg, CUDASupport,FPGAOPENCLSupport,
     CastArgsToResType
 ]> {
     // TODO: support `A @ t(A)` operation
@@ -1692,7 +1693,7 @@ def Daphne_LengthOp : Daphne_Op<"length", [
     DataTypeSca, ValueTypeSize
 ]> {
     let summary = "Returns the number of elements in the given list";
-    
+
     let arguments = (ins ListOrU:$arg);
     let results = (outs Size:$res);
 }
@@ -1701,7 +1702,7 @@ def Daphne_AppendOp : Daphne_Op<"append", [
     TypeFromFirstArg
 ]> {
     let summary = "Appends the given element to the end of the given list";
-    
+
     let arguments = (ins ListOrU:$argList, MatrixOrU:$elem);
     let results = (outs ListOrU:$resList);
 }
@@ -1710,7 +1711,7 @@ def Daphne_RemoveOp : Daphne_Op<"remove", [
     DeclareOpInterfaceMethods<InferTypesOpInterface>
 ]> {
     let summary = "Removes and returns the element at the specified index from the given list";
-    
+
     let arguments = (ins ListOrU:$argList, Size:$idx);
     let results = (outs ListOrU:$resList, MatrixOrU:$elem);
 }

@@ -104,7 +104,7 @@ if(USE_MPI)
     find_package(MPI REQUIRED)
     add_definitions(-DUSE_MPI)
     include_directories(${MPI_INCLUDE_PATH})
-endif()    
+endif()
 ##########
 
 ###### PAPI
@@ -156,6 +156,9 @@ if(LLD_PROGRAM)
     message(STATUS "Using lld")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fuse-ld=lld")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fuse-ld=lld")
+option(USE_ONEAPI "Whether to activate compilation of ONEAPI features" OFF)
+if(USE_ONEAPI)
+    add_definitions(-DUSE_ONEAPI)
 endif()
 
 find_package(Arrow REQUIRED)
