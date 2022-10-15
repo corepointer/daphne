@@ -151,7 +151,7 @@ if(USE_CUDA AND CMAKE_CUDA_COMPILER)
 endif()
 
 target_link_libraries(run_tests PRIVATE ${LIBS})
-
+target_link_directories(run_tests PRIVATE ${PROJECT_BINARY_DIR}/lib)
 add_executable(theta_join_test run_tests.cpp runtime/local/kernels/ThetaJoinTest.cpp)
 add_dependencies(theta_join_test daphne DistributedWorker)
 target_link_libraries(theta_join_test PRIVATE ${LIBS})
