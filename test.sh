@@ -26,6 +26,38 @@
 # Stop immediately if any command fails.
 set -e
 
+catch2_options=""
+BUILD_CUDA="-DUSE_CUDA=OFF"
+BUILD_ARROW="-DUSE_ARROW=OFF"
+BUILD_FPGAOPENCL="-DUSE_FPGAOPENCL=OFF"
+BUILD_DEBUG="-DCMAKE_BUILD_TYPE=Release"
+
+while [[ $# -gt 0 ]]; do
+    key=$1
+    shift
+    case $key in
+        --cuda)
+            echo using CUDA
+            export BUILD_CUDA="-DUSE_CUDA=ON"
+            ;;
+        --arrow)
+            echo using ARROW
+            BUILD_ARROW="-DUSE_ARROW=ON"
+            ;;
+        --fpgaopencl)
+            echo using FPGAOPENCL
+            export BUILD_FPGAOPENCL="-DUSE_FPGAOPENCL=ON"
+            ;;
+        --debug)
+            echo building DEBUG version
+            export BUILD_DEBUG="-DCMAKE_BUILD_TYPE=Debug"
+            ;;
+        *)
+            catch2_options="${catch2_options} ${key}"
+            ;;
+    esac
+done
+
 # Build tests.
 ./build.sh --target run_tests
 
@@ -34,6 +66,6 @@ export PYTHONPATH=$PYTHONPATH:$(pwd)/src/
 mkdir --parents src/api/python/tmp
 
 # Run tests.
-build/test/run_tests $@
+build/test/run_tests $catch2_options
 
 set +e
