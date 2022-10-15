@@ -38,6 +38,8 @@ private:
     bool selectMatrixRepresentations_;
     bool insertFreeOp_{};
     DaphneUserConfig userConfig_;
+    std::vector<llvm::StringRef> sharedLibRefs;
+
 };
 
 #endif //SRC_COMPILER_EXECUTION_DAPHNEIREXECUTOR_H

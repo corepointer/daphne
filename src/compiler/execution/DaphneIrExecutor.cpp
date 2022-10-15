@@ -32,8 +32,10 @@
 #include "mlir/Support/LogicalResult.h"
 #include "mlir/Target/LLVMIR/Dialect/LLVMIR/LLVMToLLVMIRTranslation.h"
 
+#include <filesystem>
 #include <memory>
 #include <utility>
+#include <iostream>
 
 DaphneIrExecutor::DaphneIrExecutor(bool selectMatrixRepresentations,
                                    DaphneUserConfig cfg)
@@ -175,11 +177,12 @@ std::unique_ptr<mlir::ExecutionEngine> DaphneIrExecutor::createExecutionEngine(m
     if (module) {
         // An optimization pipeline to use within the execution engine.
         auto optPipeline = mlir::makeOptimizingTransformer(0, 0, nullptr);
-
-        llvm::SmallVector<llvm::StringRef, 1> sharedLibRefs;
+        std::string daphne_executable_dir(std::filesystem::canonical("/proc/self/exe").parent_path());
+        std::string allKernelsPath(std::string(daphne_executable_dir + "/../lib/libAllKernels.so"));
+//        llvm::SmallVector<llvm::StringRef, 1> sharedLibRefs;
         // TODO Find these at run-time.
         if(userConfig_.libdir.empty()) {
-            sharedLibRefs.push_back("build/src/runtime/local/kernels/libAllKernels.so");
+            sharedLibRefs.push_back(allKernelsPath);
         }
         else {
             sharedLibRefs.insert(sharedLibRefs.end(), userConfig_.library_paths.begin(), userConfig_.library_paths.end());
@@ -187,16 +190,23 @@ std::unique_ptr<mlir::ExecutionEngine> DaphneIrExecutor::createExecutionEngine(m
 
 #ifdef USE_CUDA
         if(userConfig_.use_cuda) {
+//            std::cout << "bla: " << daphne_executable_dir << std::endl;
+            std::string cudaKernelsPath(std::string(daphne_executable_dir + "/../lib/libCUDAKernels.so"));
             if(userConfig_.libdir.empty()) {
-                sharedLibRefs.push_back("build/src/runtime/local/kernels/libCUDAKernels.so");
+//                sharedLibRefs.push_back(cudaKernelsPath);
+                sharedLibRefs.push_back("build/lib/libCUDAKernels.so");
+                std::cout << "pushing need for " << cudaKernelsPath << std::endl;
             }
+            else
+                std::cout << "libdir empty; no need for " << cudaKernelsPath << std::endl;
         }
 #endif
  
 #ifdef USE_FPGAOPENCL
         if(userConfig_.use_fpgaopencl) {
             if(userConfig_.libdir.empty()) {
-                sharedLibRefs.push_back("build/src/runtime/local/kernels/libFPGAOPENCLKernels.so");
+                std::string fpgaKernelsPath(std::string(daphne_executable_dir + "/../lib/libFPGAOPENCLKernels.so"));
+                sharedLibRefs.push_back(fpgaKernelsPath);
             }
         }
 #endif
