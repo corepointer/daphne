@@ -19,8 +19,8 @@ set -e
 
 function exit_with_usage {
   cat << EOF
-usage: $0 --version VERSION
-
+usage: pack.sh --version VERSION --feature FEATURE
+--feature FEATURE......a feature flag like --cuda, --arrow, etc ("none" for plain Daphne)
 EOF
   exit 1
 }
@@ -29,8 +29,8 @@ if [ $# -eq 0 ]; then
   exit_with_usage
 fi
 
-DAPHNE_FEATURES=("--arrow" "--cuda")
 DAPHNE_VERSION=-1
+FEATURE=""
 
 while [[ $# -gt 0 ]]; do
     key=$1
@@ -41,6 +41,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --version)
             DAPHNE_VERSION=$1
+            shift
+            ;;
+        --feature)
+            FEATURE=$1
             shift
             ;;
         *)
@@ -59,9 +63,14 @@ if [[ "$DAPHNE_VERSION" == "-1" ]]; then
   exit_with_usage
 fi
 
-export PACK_ROOT=daphne-$DAPHNE_VERSION-bin
+if [[ "$FEATURE" == "none" ]]; then
+  FEATURE=
+fi
 
-source build.sh ${DAPHNE_FEATURES[@]} --target all
+export PACK_ROOT=daphne$FEATURE-$DAPHNE_VERSION-bin
+rm -rf bin build lib
+
+source build.sh $FEATURE --target all
 
 # shellcheck disable=SC2154
 if [ -d "$daphneBuildDir"/venv ]; then
@@ -81,7 +90,8 @@ fi
 
 # shellcheck disable=SC2154
 cd "$projectRoot"
-source test.sh ${DAPHNE_FEATURES[@]}
+
+source test.sh ${FEATURE}
 
 # shellcheck disable=SC2181
 if [[ $? == 0 ]];then

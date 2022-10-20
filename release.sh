@@ -47,7 +47,7 @@ ARTIFACT_PATH=""
 DAPHNE_REPO_URL="git@github.com:corepointer/daphne.git"
 #real URL:
 #DAPHNE_REPO_URL="git@github.com:daphne-eu/daphne.git"
-
+FEATURE=""
 while [[ $# -gt 0 ]]; do
     key=$1
     shift
@@ -57,6 +57,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --version)
             DAPHNE_VERSION=$1
+            shift
+            ;;
+        --feature)
+            FEATURE=$1
             shift
             ;;
         --githash)
@@ -99,7 +103,7 @@ if [ $BUILD -eq 1 ]; then
 
   # set the requested commit to build Daphne
   git checkout "$GIT_HASH"
-  source pack.sh --version "$DAPHNE_VERSION"
+  source pack.sh --version "$DAPHNE_VERSION" --feature $FEATURE
   # return to the previous branch
   git checkout -
 
