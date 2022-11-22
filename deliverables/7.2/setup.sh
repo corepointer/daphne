@@ -7,16 +7,14 @@ script_dir="$(realpath $(dirname "${0})"))"
 ### DAPHNE dir
 root=$(realpath "$script_dir/../..")
 
-
-
-
 cd ${root} || ( cd ${home} && exit 1 )
 
 ### Build DAPHNE
-./build.sh --morphstore
+./build.sh --morphstore --cuda
 
 ### Generate TPC-H data
-./deliverables/7.2/tpch/setup.sh
+#./deliverables/7.2/tpch/setup.sh
+benchmarks/tpc-h/generate.sh
 
 cd ${home} || exit 1
 
