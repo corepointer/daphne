@@ -707,11 +707,16 @@ public:
         mlir::Type operandType;
         std::vector<Value> newOperands;
         if(numRes > 0) {
+            std::string str;
+            llvm::raw_string_ostream output(str);
             auto m32type = rewriter.getF32Type();
             auto m64type = rewriter.getF64Type();
             auto msi64type = rewriter.getIntegerType(64, true);
-
             auto res_elem_type = op->getResult(0).getType().dyn_cast<mlir::daphne::MatrixType>().getElementType();
+            res_elem_type.print(output);
+            std::cout << "output elem type: " << str << std::endl;
+            msi64type.print(output);
+            std::cout << "msi64type: " << str << std::endl;
             if(res_elem_type == m64type)
                 operandType = daphne::MatrixType::get(getContext(), m64type);
             else if(res_elem_type == m32type)
@@ -719,8 +724,6 @@ public:
             else if(res_elem_type == msi64type)
                 operandType = daphne::MatrixType::get(getContext(), msi64type);
             else {
-                std::string str;
-                llvm::raw_string_ostream output(str);
                 op->getResult(0).getType().print(output);
                 throw std::runtime_error("Unsupported result type for vectorizedPipeline op: " + str);
             }

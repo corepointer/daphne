@@ -43,7 +43,6 @@ struct MarkCUDAOpsPass : public PassWrapper<MarkCUDAOpsPass, FunctionPass> {
     void runOnFunction() final;
     
     void addCUDAOpsToVectorizedPipeline(OpBuilder& builder, daphne::VectorizedPipelineOp& pipelineOp) const {
-        
         auto& pipeline = pipelineOp.body().front().getOperations();
         bool build_cuda_pipeline;
         
@@ -87,9 +86,11 @@ struct MarkCUDAOpsPass : public PassWrapper<MarkCUDAOpsPass, FunctionPass> {
                 auto rows = t.getNumRows();
                 auto cols = t.getNumCols();
                 if(rows < 0 || cols < 0) {
+#ifndef NDEBUG
                     std::cerr << "Warning: Ignoring unknown dimension in max mem check of " <<
                               op->getName().getStringRef().str() << "\ndims are: " << rows << "x" << cols <<
                               "\nsetting unknowns to 1 for this test" << std::endl;
+#endif
                     if(rows < 0)
                         rows = 1;
                     if(cols < 0)
@@ -121,9 +122,11 @@ struct MarkCUDAOpsPass : public PassWrapper<MarkCUDAOpsPass, FunctionPass> {
                 auto rows = t.getNumRows();
                 auto cols = t.getNumCols();
                 if(rows < 0 || cols < 0) {
+#ifndef NDEBUG
                     std::cerr << "Warning: Ignoring unknown dimension in min input size check of " <<
                               op->getName().getStringRef().str() << "\ndims are: " << rows << "x" << cols <<
                               "\nsetting unknowns to 256 for this test" << std::endl;
+#endif
                     if(rows < 0)
                         rows = 256;
                     if(cols < 0)
@@ -140,8 +143,8 @@ struct MarkCUDAOpsPass : public PassWrapper<MarkCUDAOpsPass, FunctionPass> {
         
         bool use_cuda = op->hasTrait<mlir::OpTrait::CUDASupport>();
         use_cuda = use_cuda && CompilerUtils::isMatrixComputation(op);
-        use_cuda = use_cuda && hasReqMinDims(op);
-        use_cuda = use_cuda && fitsInMemory(op);
+//        use_cuda = use_cuda && hasReqMinDims(op);
+//        use_cuda = use_cuda && fitsInMemory(op);
         return use_cuda;
     }
 };
@@ -156,7 +159,8 @@ void MarkCUDAOpsPass::runOnFunction() {
             addCUDAOpsToVectorizedPipeline(builder, pipelineOp);
         else {
             if((!llvm::isa<daphne::VectorizedPipelineOp>(op->getParentOp()) && checkUseCUDA(op)) ||
-                 llvm::isa<daphne::CreateCUDAContextOp>(op)) {
+//                if(checkUseCUDA(op) ||
+                llvm::isa<daphne::CreateCUDAContextOp>(op)) {
                 op->setAttr("cuda_device", builder.getI32IntegerAttr(0));
             }
         }

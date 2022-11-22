@@ -78,10 +78,9 @@ beta = solve(A, b);
 // Result output
 // ****************************************************************************
 
-// print(beta);
+print(beta);
 
 tp4 = now();
-
 
 # read
 print("\t", 0, 1);
