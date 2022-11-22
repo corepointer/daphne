@@ -1,0 +1,100 @@
+tp0 = now();
+
+/// read input
+c = readFrame($inCustomer);
+o = readFrame($inOrders);
+
+/// register frames to sql scope
+registerView("customer", c);
+registerView("orders", o);
+
+tp1 = now();
+
+/// execute query
+res = sql(
+   "Select customer.C_CUSTKEY, customer.C_NAME, customer.C_ADDRESS, customer.C_NATIONKEY, customer.C_PHONE, customer.C_ACCTBAL, customer.C_MKTSEGMENT, customer.C_COMMENT, sum(orders.O_TOTALPRICE)
+    From customer
+    Inner Join orders
+    On customer.C_CUSTKEY = orders.O_CUSTKEY
+
+    Where customer.C_MKTSEGMENT <= 2
+    And orders.O_ORDERDATE >= 19960802
+    Group By customer.C_CUSTKEY, customer.C_NAME, customer.C_ADDRESS, customer.C_NATIONKEY, customer.C_PHONE, customer.C_ACCTBAL, customer.C_MKTSEGMENT, customer.C_COMMENT;"
+);
+
+// Range of Marketsegment: 0 - 4
+// Range of Orderdate: 19920101 - 19980802
+tp2 = now();
+
+/// print the results
+// print("================================");
+// print(res);
+// print("================================");
+
+// TODO Do this after the column extraction.
+XY = as.matrix<f64>(res);
+
+// TODO Do this on the frame, then it's zero cost.
+X0 = XY[, seq(1, as.si64(ncol(XY)) - 2, 1)];
+
+// TODO Most of the remaining ops (until the matmul) could be done (more)
+// efficiently on frames, no need to switch to matrices so early. But this also
+// applies to the baseline of Pandas+TF, even in MonetDB (although, then the
+// user would have to think about it manually).
+
+i0 = fill(-1, 1, 2); // don't encode C_NAME, C_ADDRESS
+i1 = fill(25, 1, 1); // encode C_NATIONKEY
+i2 = fill(-1, 1, 2); // don't encode C_PHONE, C_ACCTBAL
+i3 = fill(5, 1, 1); // encode C_MKTSEGMENT
+i4 = fill(-1, 1, 1); // don't encode C_COMMENT
+i = cbind(cbind(cbind(i0, i1), cbind(i2, i3)), i4);
+#print(i);
+X = oneHot(X0, i);
+#print(X);
+
+tp3 = now();
+
+// TODO Do this on the frame, then it's zero cost.
+// TODO Ensure this is a no-op for one column of the correct value type.
+y = XY[, seq(as.si64(ncol(XY)) - 1, as.si64(ncol(XY)) - 1, 1)];
+
+X = (X - mean(X, 1)) / stddev(X, 1);
+
+X = cbind(X, fill(1.0, nrow(X), 1));
+
+lambda = fill(0.001, ncol(X), 1);
+A = t(X) @ X;
+b = t(X) @ y;
+
+// TODO: Does that still make sense, algorithmically?
+A = replace(A, nan, 0.0);
+b = replace(b, nan, 0.0);
+
+A = A + diagMatrix(lambda);
+
+beta = solve(A, b);
+
+// ****************************************************************************
+// Result output
+// ****************************************************************************
+
+// print(beta);
+
+tp4 = now();
+
+
+# read
+print("\t", 0, 1);
+print(tp1 - tp0, 0, 1);
+print("\t", 0, 1);
+
+# query
+print(tp2 - tp1, 0, 1);
+print("\t", 0, 1);
+
+# conversion to matrix
+print(tp3 - tp2, 0, 1);
+print("\t", 0, 1);
+
+# lm
+print(tp4 - tp3, 1, 1);
