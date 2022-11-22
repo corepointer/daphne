@@ -2232,6 +2232,7 @@
         "instantiations": [
             [["DenseMatrix", "double"]],
             [["DenseMatrix", "float"]],
+            [["DenseMatrix", "int64_t"]],
             [["CSRMatrix", "double"]]
         ]
     },
