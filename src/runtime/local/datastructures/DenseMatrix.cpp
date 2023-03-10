@@ -108,6 +108,9 @@ auto DenseMatrix<ValueType>::getValuesInternal(const IAllocationDescriptor* allo
                     std::get<2>(result) = values.get();
                 }
 
+//                for(auto i = 0; i < this->getNumItems(); i++)
+//                    std::cout << values[i] << " ";
+//                std::cout << std::endl;
                 // create new data placement
                 auto new_data_placement = const_cast<DenseMatrix<ValueType> *>(this)->mdo.addDataPlacement(alloc_desc);
                 new_data_placement->allocation->createAllocation(bufferSize(), false);
