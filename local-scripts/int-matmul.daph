@@ -1,0 +1,74 @@
+
+rows = $rows;
+cols = $cols;
+rep = $rep;
+sizeVT=4;
+total_time_mm=0;
+total_time_ew=0;
+total_time=0;
+mb = as.f32(1024^2);
+ms = as.f32(10^6);
+s = as.f32(10^9);
+
+TS1 = now();
+
+M1 = fill(2.0, rows, cols);
+M2 = fill(2.0, cols, rows);
+
+print(M1);
+print(M2);
+# print(M1[0:5,0:5]);
+# print(M2[0:5,0:5]);
+# print(M3[0:5,0:5]);
+TS2 = now();
+
+i=1;
+# for(i in 1:rep) {
+    TS3 = now();
+        M3 = M1 @ M2;
+    TS4 = now();
+#        M4 = M3 * V1;
+    #TS5 = now();
+
+    #print(M3[0:5,0:5]);
+
+    duration_mm = TS4 - TS3;
+#     duration_ew = TS3 - TS2;
+#     print("TS_matMul" + i + ":" + duration_mm);
+#     print("TS_ewMult" + i + ":" + duration_ew);
+    total_time_mm = total_time_mm + duration_mm;
+#     total_time_ew = total_time_ew + duration_ew;
+#    total_time = total_time_mm + total_time_ew;
+# }
+
+print(M3);
+#print(M3[0:3,0:3]);
+#print(M4[0:3,0:3]);
+
+TS_end = now();
+
+total_time = TS_end - TS1;
+#print(M4[0:5,0:5]);
+in_size = rows*cols*sizeVT;
+print("\n");
+print("Input size: ",0,0);print(in_size/mb, 0, 0); print(" Mb for " + rows*cols + " elements");
+print("\n");
+print("Total time: ",0,0);print(total_time/ms,0,0);print(" ms");
+print("Avg iteraton time: ",0,0); print(total_time/rep/ms, 0, 0); print(" ms");
+print("\n");
+print("Input gen time: ",0,0); print((TS2-TS1)/ms,0,0); print(" ms");
+print("\n");
+print("MM total time: ",0,0); print(total_time_mm/ms,0,0); print(" ms");
+print("Avg MM time: ",0,0);print(total_time_mm/rep/ms,0,0);print(" ms");
+print("\n");
+# print("EW total time: ",0,0);print(total_time_ew/ms,0,0);print(" ms");
+# print("Avg EW time: ",0,0);print(total_time_ew/rep/ms,0,0);print(" ms");
+print("\n");
+mem_moved = as.f32(rep) * as.f32(3 * in_size) / as.f32(mb);
+print("Mem moved: " + as.si64(mem_moved) + " Mb");
+print("\n");
+bw_mm = mem_moved / as.f32(total_time_mm / s);
+# bw_ew = mem_moved / as.f32(total_time_ew / s);
+print("Memory bandwidth (stream convention):");
+print("MM: ", 0, 0); print(bw_mm, 0, 0); print(" MB/s");
+# print("EW: ", 0, 0); print(bw_ew, 0, 0); print(" MB/s");

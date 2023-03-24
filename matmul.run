@@ -1,0 +1,2 @@
+#!/usr/bin/env bash 
+time bin/daphne --cuda --explain=kernels matmul.daph rows=1024 cols=20480 rep=3 | grep --color=always -E "^|CUDA_"

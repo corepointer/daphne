@@ -1,0 +1,78 @@
+# Testing CSR representation
+rep = 3;
+t_start = now();
+m=1024;
+rows=10 * m;
+cols=1 * m;
+size = (rows * cols * 8.0) / (1048576.0);
+size_mm_out = (rows * rows * 8.0) / (1048576.0);
+m1 = rand(rows, cols, 100.0, 200.0, 0.1, 42);
+m2 = rand(rows, cols, 100.0, 200.0, 0.1, 41);
+m3 = rand(cols, rows, 100.0, 200.0, 0.1, 42);
+#m3 = m2;
+
+d0=0.0;
+for(i in 1:rep) {
+  t01 = now();
+    m3 = t(m2);
+  t02 = now();
+  d0 = d0 + (t02-t01);
+}
+d0=d0/rep/1000000.0;
+print("");
+print("Experiment 0 (t(m2)):");
+print("Duration (avg of " + rep + " trials): ",0,0); print(d0 + " ms");
+print("In+Out data size: 2 x " + size + " = " + (2 * size) + " Mb");
+print("--------------------------------------\n");
+print("Input matrices: ");
+print("m1 [real size: " + rows + "x" + cols + "]:");
+print(m1[0:3,0:10]);
+print("");
+
+print("m2 [real size: " + rows + "x" + cols + "]:");
+print(m2[0:3,0:10]);
+print("");
+
+print("m3 [real size: " + cols + "x" + rows + "]:");
+print(m3[0:3,0:10]);
+print("--------------------------------------\n");
+
+d1 = 0.0;
+Z1 = fill(0.0,rows,cols);
+for(i in 1:rep) {
+  t1 = now();
+    Z1 = m1 + m2;
+  t2 = now();
+  d1 = d1 + (t2-t1);
+}
+print("m1 + m2");
+print(Z1[0:3,0:10]);
+print("");
+d1=d1/rep/1000000.0;
+print("Experiment 1 (m1+m2):");
+print("Duration (avg of " + rep + " trials): ",0,0); print(d1 + " ms");
+print("In+Out data size: 3 x " + size + " = " + (3 * size) + " Mb");
+print("--------------------------------------\n");
+
+print("m1 @ m3");
+d2 = 0.0;
+Z2 = fill(0.0,rows,rows);
+for(i in 1:rep) {
+  t3 = now();
+    Z2 = m1 @ t(m2);
+  t4 = now();
+  d2 = d2 + (t4-t3);
+}
+print(Z2[0:3,0:10]);
+print("");
+
+d2=d2/rep/1000000.0;
+print("Experiment 2 (m1 @ m3):");
+print("Duration (avg of " + rep + " trials): ",0,0); print(d2 + " ms");
+print("In+Out data size: 2 x " + size + " + " + size_mm_out + " = " + (2 * size + size_mm_out) + " Mb");
+print("--------------------------------------\n");
+
+t_end = now();
+duration=((t_end-t_start)/1000000.0);
+print("Total duration: ");
+print(duration + " ms");

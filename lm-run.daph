@@ -1,0 +1,65 @@
+#XY = rand($numRows, $numCols, 0.0, 1.0, 1, 42);
+# Linear regression model training on random data (double precision).
+
+# Data generation.
+#XY = false; # just so that it exists
+#if($useInputFile)
+#  XY = readMatrix($inputFile);
+#else
+  XY = rand($numRows, $numCols, 0.0, 1.0, 1, 42);
+
+tp0 = now();
+
+// Extraction of X and y.
+X = XY[, seq(0, as.si64($numCols) - 2, 1)];
+y = XY[, seq(as.si64($numCols) - 1, as.si64($numCols) - 1, 1)];
+#print("------- y: ", 0); print(y);
+
+// Normalization, standardization.
+Xmeans = mean(X, 1);
+Xstddev = stddev(X, 1);
+#print(Xmeans);
+#print(Xstddev);
+// Could be expressed as follows to simplify vectorization:
+//Xmeans = sum(X, 1) / as.f64($numRows);
+//Xstddev = sqrt(sum((X - Xmeans) ^ 2.0, 1) / as.f64($numRows));
+
+X = (X - Xmeans) / Xstddev;
+#print("X = (X - Xmeans) / Xstddev; ", 0); print(X);
+X = cbind(X, fill(1.0, nrow(X), 1));
+#print("cbind(X,1);", 0); print(X);
+
+//A = t(X) @ X;
+// Can be rewritten as follows to simplify vectorization (and for general speed-up):
+A = syrk(X);
+#print("------- A = syrk(X); ", 0);print(A);
+lambda = fill(0.001, ncol(X), 1);
+A = A + diagMatrix(lambda);
+
+#b = t(X) @ y;
+// Can be rewritten as follows to simplify vectorization:
+#b = t(t(y) @ X);
+b=gemv(X,y);
+// or
+#b = t(sum((X * y), 1));
+
+#print("------- A: ", 0); print(A);
+#print("------- A[,fill(0,1,1)] ", 0); print(A[,fill(0,1,1)]);
+#print("------- b: ",0); print(b);
+#print("sum A: "); print(sum(A));
+#print("sum b: "); print(sum(b));
+beta = solve(A, b);
+
+tp1 = now();
+#print(tp1 - tp0, 1, 2);
+
+
+print("Execution time: ", 0);
+print((tp1 - tp0)/1000000, 0);
+print(" milliseconds", 1);
+
+// ****************************************************************************
+// Result output
+// ****************************************************************************
+#print(beta);
+#print("Result sum: ", 0); print(sum(beta));

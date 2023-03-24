@@ -1,0 +1,25 @@
+ROWS=2500;
+COLS=25000;
+t0=now();
+X = fill(as.f32(2.0), ROWS, COLS);
+Y = fill(as.f32(3.0), COLS, ROWS);
+#X = fill(as.f32(2.0), ROWS, COLS);
+#Y = fill(as.f32(3.0), ROWS, COLS);
+t1=now();
+Z = X @ Y;
+#Z = X * Y;
+t2=now();
+print(X[1:5,1:10]);
+print(Y[1:5,1:10]);
+#print(Y);
+print(Z[1:5,1:10]);
+#print(X);
+#print(Y);
+#print(Z);
+print(sum(Z));
+t3=now();
+
+print("fill  [µs]: ", 0, 0); print(as.f32((t1-t0))/1000);
+print("MM/EW [µs]: ", 0, 0); print(as.f32((t2-t1))/1000);
+print("print [ms]: ", 0, 0); print(as.f32((t3-t2))/1000^2);
+print("total [ms]: ", 0, 0); print(as.f32((t3-t0))/1000^2);
