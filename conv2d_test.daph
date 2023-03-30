@@ -1,5 +1,36 @@
-X = rand(335, 10240, 0.0, 256.0, 1.0, 1);
-W = rand(364, 250, 0.0, 1.0, 1.0, 1);
-b = rand(1, 364, 0.0, 1.0, 1.0, 1);
+// input/image dimensions (e.g., width x height x RGBA)
+iw=32;
+ih=32;
+ic=4;
+input_size=iw*ih*ic;
 
-X_conv, Hout, Wout = conv2d(X, W, 5, 364, 32, 32, 5, 5, 1, 1, 1, 1);
+// input (aka "images")
+num_images=335;
+X = rand(num_images, input_size, 0.0, 1.0, 1.0, 42);
+
+// filter dimensions
+fw = 5;
+fh = 5;
+fc = 10;
+
+// filter
+F = rand(fc, fw*fh, 0.0, 1.0, 1.0, 42);
+
+// bias vector
+b = rand(1, fc, 0.0, 1.0, 1.0, 42);
+
+// stride dimensions
+sw = 1;
+sh = 1;
+
+// padding dimensions
+pw = 1;
+ph = 1;
+
+print(b[,0:10]);
+
+X_conv, Hout, Wout = conv2d(X, F, num_images, ic, iw, ih, fw, fh, sw, sh, pw, ph, b);
+
+print(Hout,0,0);print(" x ",0,0);print(Wout);
+print(nrow(X_conv),0,0);print(" x ",0,0);print(ncol(X_conv));
+print(X_conv[0:5,0:10]);

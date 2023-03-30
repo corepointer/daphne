@@ -137,14 +137,25 @@ std::shared_ptr<std::byte> CUDAContext::malloc(size_t size, bool zero, size_t& i
     CHECK_CUDART(cudaMalloc(reinterpret_cast<void **>(&dev_ptr), size));
     allocations.emplace(id, std::shared_ptr<std::byte>(dev_ptr, CudaDeleter<std::byte>()));
 
-    if(zero)
+//    if(zero)
         CHECK_CUDART(cudaMemset(dev_ptr, 0, size));
+    
+    std::cout << "malloc allocation " << id << " of size: " << size << " -----------------------" << std::endl;
+    for (const auto& a : allocations ) {
+        std::cout << "id: " << a.first << " ptr: " << a.second.get() << std::endl;
+    }
+    
     return allocations.at(id);
 }
 
 void CUDAContext::free(size_t id) {
     // ToDo: handle reuse
-    CHECK_CUDART(cudaFree(allocations.at(id).get()));
+    std::cout << "freeing allocation " << id << " -----------------------" << std::endl;
+    for (const auto& a : allocations ) {
+        std::cout << "id: " << a.first << " ptr: " << a.second.get() << std::endl;
+    }
+//    CHECK_CUDART(cudaFree(allocations.at(id).get()));
+    allocations.at(id).reset();
     allocations.erase(id);
 }
 

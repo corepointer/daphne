@@ -56,7 +56,49 @@ public:
     }
 
     void transferTo(std::byte* src, size_t size) override {
-        CHECK_CUDART(cudaMemcpy(data.get(), src, size, cudaMemcpyHostToDevice));
+//        CHECK_CUDART(cudaMemcpy(data.get(), src, size, cudaMemcpyHostToDevice));
+        auto dev_ptr = data.get();
+        
+#ifndef NDEBUG
+        std::ios state(nullptr);
+        state.copyfmt(std::cout);
+        std::cout << "calling cudaMemcpy" << "\n\tdev_ptr: " << dev_ptr << "\n\tsrc_ptr: " << src <<
+        "\n\tsize: " << size << std::endl;
+        std::cout << "addressof dev_ptr in cudaMemcpy: " << &dev_ptr << std::endl;
+#endif
+//        if(size == 2912) {
+////        std::cout << "freeing" << std::endl;
+////        CHECK_CUDART(cudaFree(dev_ptr));
+//            auto dsize = size / sizeof(double);
+//            auto dptr = reinterpret_cast<double*>(src);
+//            auto num_items = std::min(static_cast<size_t>(dsize), 5ul);
+//            std::vector<double> tmpvec;
+//            for(auto i = 0ul; i < num_items-1; i++) {
+//                std::cout << dptr[i] << ", ";
+//                tmpvec.push_back(dptr[i]);
+//            }
+//            std::cout << dptr[num_items] << std::endl;
+//            tmpvec.push_back(dptr[num_items]);
+//
+//            double* myptr;
+//            std::cout << "mallocing" << std::endl;
+//            CHECK_CUDART(cudaMalloc(reinterpret_cast<void**>(&myptr), size));
+//            std::cout << "myptr: " << myptr << std::endl;
+//            std::cout << "memsetting first" << std::endl;
+//            CHECK_CUDART(cudaMemset(myptr, 0, size));
+//            std::cout << "copying..." << std::endl;
+//            CHECK_CUDART(cudaMemcpy(myptr, tmpvec.data(), size, cudaMemcpyHostToDevice));
+//            std::cout << "resetting" << std::endl;
+//            data.reset(reinterpret_cast<std::byte*>(myptr));
+//        }
+//        else
+            CHECK_CUDART(cudaMemcpy(dev_ptr, src, size, cudaMemcpyHostToDevice));
+#ifndef NDEBUG
+        size_t available; size_t total;
+        cudaMemGetInfo(&available, &total);
+        std::cout << "Available mem: " << (available / (1048576)) << "Mb" << std::endl;
+        std::cout.copyfmt(state);
+#endif
     }
     void transferFrom(std::byte* dst, size_t size) override {
         CHECK_CUDART(cudaMemcpy(dst, data.get(), size, cudaMemcpyDeviceToHost));

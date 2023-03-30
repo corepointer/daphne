@@ -136,7 +136,7 @@ struct MarkCUDAOpsPass : public PassWrapper<MarkCUDAOpsPass, OperationPass<func:
     }
     
     bool checkUseCUDA(Operation* op) const {
-//        std::cout << "checkUseCUDA: " << op->getName().getStringRef().str() << std::endl;
+        std::cout << "checkUseCUDA: " << op->getName().getStringRef().str() << std::endl;
         
         bool use_cuda = op->hasTrait<mlir::OpTrait::CUDASupport>();
         use_cuda = use_cuda && CompilerUtils::isMatrixComputation(op);
