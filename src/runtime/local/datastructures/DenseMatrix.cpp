@@ -19,13 +19,14 @@ template<typename ValueType>
 DenseMatrix<ValueType>::DenseMatrix(size_t maxNumRows, size_t numCols, bool zero, IAllocationDescriptor* allocInfo) :
         Matrix<ValueType>(maxNumRows, numCols), rowSkip(numCols), lastAppendedRowIdx(0), lastAppendedColIdx(0)
 {
+#ifndef NDEBUG
+    std::cerr << "creating dense matrix of allocation type " << (allocInfo == nullptr ?
+            static_cast<int>(ALLOCATION_TYPE::HOST) : static_cast<int>(allocInfo->getType())) << ", dims: "
+            << numRows << "x" << numCols << " req.mem.: " << static_cast<float>(bufferSize()) / (1048576) << "Mb"
+            <<  std::endl;
+#endif
     DataPlacement* new_data_placement;
     if(allocInfo != nullptr) {
-#ifndef NDEBUG
-        std::cerr << "creating dense matrix of allocation type " << static_cast<int>(allocInfo->getType()) << ", dims: "
-                << numRows << "x" << numCols << " req.mem.: " << static_cast<float>(bufferSize()) / (1048576) << "Mb"
-                <<  std::endl;
-#endif
         new_data_placement = this->mdo.addDataPlacement(allocInfo);
         new_data_placement->allocation->createAllocation(bufferSize(), zero);
     }
