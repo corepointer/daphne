@@ -64,7 +64,11 @@ DenseMatrix<ValueType>::DenseMatrix(const DenseMatrix<ValueType> * src, size_t r
     
     this->row_offset = rowLowerIncl;
     this->col_offset = colLowerIncl;
-    rowSkip = src->rowSkip;
+
+    // ToDo: setting this to the original rowSkip was an indicator that this is a shallow copy/view matrix
+    //       we can probably do better if this information is needed (vectorized transpose?)
+//    rowSkip = src->rowSkip;
+    rowSkip = colLowerIncl;
     auto offset = rowLowerIncl * src->rowSkip + colLowerIncl;
     
     // ToDo: manage host mem (values) in a data placement
