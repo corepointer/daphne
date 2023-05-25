@@ -43,6 +43,7 @@ public:
                 spdlog::register_logger(logger);
             }
         }
+        spdlog::set_default_logger(default_logger);
     }
 };
 
