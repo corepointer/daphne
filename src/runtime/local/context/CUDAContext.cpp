@@ -19,9 +19,9 @@
 size_t CUDAContext::alloc_count = 0;
 
 void CUDAContext::destroy() {
-#ifndef NDEBUG
-    std::cerr << "Destroying CUDA context..." << std::endl;
-#endif
+//#ifndef NDEBUG
+//    std::cerr << "Destroying CUDA context..." << std::endl;
+//#endif
     CHECK_CUBLAS(cublasDestroy(cublas_handle));
     CHECK_CUSPARSE(cusparseDestroy(cusparse_handle));
     CHECK_CUDNN(cudnnDestroy(cudnn_handle));
@@ -49,11 +49,11 @@ void CUDAContext::init() {
     // ToDo: make this a user config item
     float mem_usage = 0.9f;
     mem_budget = total * mem_usage;
-#ifndef NDEBUG
-    std::cerr << "Using CUDA device " << device_id << ": " << device_properties.name  << "\nAvailable mem: "
-            << available << " Total mem: " << total << " using " << mem_usage * 100 << "% thereof -> " << mem_budget
-            << std::endl;
-#endif
+//#ifndef NDEBUG
+//    std::cerr << "Using CUDA device " << device_id << ": " << device_properties.name  << "\nAvailable mem: "
+//            << available << " Total mem: " << total << " using " << mem_usage * 100 << "% thereof -> " << mem_budget
+//            << std::endl;
+//#endif
     CHECK_CUBLAS(cublasCreate(&cublas_handle));
     CHECK_CUSPARSE(cusparseCreate(&cusparse_handle));
     CHECK_CUDNN(cudnnCreate(&cudnn_handle));
