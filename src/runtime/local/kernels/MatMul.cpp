@@ -290,9 +290,9 @@ void MatMul<DenseMatrix<VT>, DenseMatrix<VT>, DenseMatrix<VT>>::apply(DenseMatri
     auto C = res->getValues();
 
 //    spdlog::get("default")->set_level(spdlog::level::level_enum::debug);
-    spdlog::debug("m {}, n {} k {}", m, n, k);
+//    spdlog::debug("m {}, n {} k {}", m, n, k);
     auto incy = static_cast<int>(res->getRowSkip());
-    spdlog::debug("incy: {}", incy);
+//    spdlog::debug("incy: {}", incy);
 
     if(nr1 == 1 && nc2 == 1) {// Vector-Vector
 //        spdlog::debug("launch_dot<{}>(a[{}], b[{}])", typeid(alpha).name(), m, n);
@@ -304,9 +304,9 @@ void MatMul<DenseMatrix<VT>, DenseMatrix<VT>, DenseMatrix<VT>>::apply(DenseMatri
 //        int32_t ldb = transb ? k : n;
 //    int32_t ldc = m;
 //        int32_t ldc = transa ? k : m;
-        spdlog::get("default")->debug("lda {}, ldb {} ldc {}", lda, ldb, ldc);
+//        spdlog::get("default")->debug("lda {}, ldb {} ldc {}", lda, ldb, ldc);
 
-        spdlog::debug("launch_gemv<{}>(A[{},{}], x[{}])", typeid(alpha).name(), m, k, k);
+//        spdlog::debug("launch_gemv<{}>(A[{},{}], x[{}])", typeid(alpha).name(), m, k, k);
 //        launch_gemv<VT>(transa, transb, m, k, alpha, A, lda, B, 1, beta, C, incy);
         launch_gemv<VT>(transa, transb, lhs->getNumRows(), lhs->getNumCols(), alpha, A, lda, B, 1, beta, C, incy);
     }
@@ -317,7 +317,7 @@ void MatMul<DenseMatrix<VT>, DenseMatrix<VT>, DenseMatrix<VT>>::apply(DenseMatri
 //        int32_t ldb = transb ? n : k;
 //#    int32_t ldc = m;
 //       int32_t ldc = transa ? k : m;
-        spdlog::get("default")->debug("lda {}, ldb {} ldc {}", lda, ldb, ldc);
+//        spdlog::get("default")->debug("lda {}, ldb {} ldc {}", lda, ldb, ldc);
 
 //        launch_gemm<VT>(transa, transb, m, n, k, alpha, A, lda, B, ldb, beta, C, ldc);
         launch_gemm<VT>(transa, transb, nr1, nc2, nc1, alpha, A, lda, B, ldb, beta, C, ldc);
