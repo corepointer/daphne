@@ -290,9 +290,9 @@ void MatMul<DenseMatrix<VT>, DenseMatrix<VT>, DenseMatrix<VT>>::apply(DenseMatri
     auto C = res->getValues();
 
 //    spdlog::get("default")->set_level(spdlog::level::level_enum::debug);
-//    spdlog::debug("m {}, n {} k {}", m, n, k);
+    spdlog::get("default")->debug("m {}, n {} k {}", m, n, k);
     auto incy = static_cast<int>(res->getRowSkip());
-//    spdlog::debug("incy: {}", incy);
+    spdlog::debug("incy: {}", incy);
 
     if(nr1 == 1 && nc2 == 1) {// Vector-Vector
 //        spdlog::debug("launch_dot<{}>(a[{}], b[{}])", typeid(alpha).name(), m, n);

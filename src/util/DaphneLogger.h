@@ -21,14 +21,19 @@
 #include <spdlog/spdlog.h>
 #include <api/cli/DaphneUserConfig.h>
 #include <vector>
+
 class DaphneUserConfig;
 
 class DaphneLogger {
+    const static std::vector<LogConfig> fallback_loggers;
     std::shared_ptr<spdlog::logger> default_logger{};
     std::vector<std::shared_ptr<spdlog::logger>> loggers{};
     spdlog::level::level_enum default_level{};
     int n_threads;
     int queue_size;
+
+    void createLoggers(const LogConfig& config);
+
 public:
     explicit DaphneLogger(DaphneUserConfig& config);
     std::vector<std::shared_ptr<spdlog::logger>>* getLoggers() {

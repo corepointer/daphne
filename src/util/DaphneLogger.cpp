@@ -23,10 +23,10 @@
 
 #include <iostream>
 
-DaphneLogger::DaphneLogger(DaphneUserConfig& _config) : n_threads(1), queue_size(8192) {
-    spdlog::init_thread_pool(queue_size, n_threads);
-    for (const auto& config : _config.loggers) {
-        try {
+const std::vector<LogConfig> DaphneLogger::fallback_loggers = {{"default","",2,"%^%L %H:%M:%S [%n]%$ %v"}};
+
+void DaphneLogger::createLoggers(const LogConfig& config) {
+
             auto logger = spdlog::get(config.name);
             if(not logger) {
                 std::vector<spdlog::sink_ptr> sinks;
@@ -37,8 +37,8 @@ DaphneLogger::DaphneLogger(DaphneUserConfig& _config) : n_threads(1), queue_size
 
                 logger = std::make_shared<spdlog::async_logger>(config.name, sinks.begin(), sinks.end(),
                                                                 spdlog::thread_pool());
-                auto tmp = static_cast<spdlog::level::level_enum>(config.level);
-                logger->set_level(tmp);
+                auto level = static_cast<spdlog::level::level_enum>(config.level);
+                logger->set_level(level);
                 logger->set_pattern(config.format);
                 loggers.push_back(logger);
                 spdlog::register_logger(loggers.back());
@@ -47,10 +47,22 @@ DaphneLogger::DaphneLogger(DaphneUserConfig& _config) : n_threads(1), queue_size
                     spdlog::set_default_logger(loggers.back());
                 }
             }
-            _config.log_ptr = this;
+}
+
+DaphneLogger::DaphneLogger(DaphneUserConfig& _config) : n_threads(1), queue_size(8192) {
+    spdlog::init_thread_pool(queue_size, n_threads);
+    try {
+        // user configured loggers
+        for (const auto &config: _config.loggers) {
+            createLoggers(config);
         }
-        catch(const spdlog::spdlog_ex& ex) {
-            std::cout << "Log initialization failed: " << ex.what() << std::endl;
+        // compiled fallback loggers
+        for (const auto &config: fallback_loggers) {
+            createLoggers(config);
         }
     }
+    catch (const spdlog::spdlog_ex &ex) {
+        std::cout << "Log initialization failed: " << ex.what() << std::endl;
+    }
+    _config.log_ptr = this;
 }
