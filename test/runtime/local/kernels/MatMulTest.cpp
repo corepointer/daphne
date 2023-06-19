@@ -133,8 +133,9 @@ TEMPLATE_PRODUCT_TEST_CASE("MatMul", TAG_KERNELS, (DenseMatrix), (float, double,
     DataObjectFactory::destroy(m0, m1, m2, m3, m4, m5, m6, v0, v1, v2, v3, v4, v5, v6, v7, v8);
 }
 
-TEMPLATE_PRODUCT_TEST_CASE("MatMul Transposed", TAG_KERNELS, (DenseMatrix), (float, double)) {
+TEMPLATE_PRODUCT_TEST_CASE("MatMul Transposed", TAG_KERNELS, (DenseMatrix), (float, double, int32_t, int64_t)) {
     using DT = TestType;
+    auto dctx = setupContextAndLogger();
 
     auto m0 = genGivenVals<DT>(3, {
         1, 2, 3,
