@@ -150,8 +150,8 @@ public:
     void shrinkNumRows(size_t numRows) {
         assert((numRows <= this->numRows) && "numRows can only the shrinked");
         // TODO Here we could reduce the allocated size of the rowOffsets array.
-//        this->numRows = numRows;
-        spdlog::error("CSRMatrix: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
+        this->numRows = numRows;
+//        spdlog::error("CSRMatrix: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     size_t getMaxNumNonZeros() const {

@@ -171,8 +171,8 @@ public:
     void shrinkNumRows(size_t numRows) {
         assert((numRows <= this->numRows) && "number of rows can only the shrunk");
         // TODO Here we could reduce the allocated size of the values array.
-//        this->numRows = numRows;
-        spdlog::error("DenseMatrix: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
+        this->numRows = numRows;
+//        spdlog::error("DenseMatrix: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     [[nodiscard]] size_t getRowSkip() const { return rowSkip; }
@@ -433,8 +433,8 @@ public:
     void shrinkNumRows(size_t numRows) {
         assert((numRows <= this->numRows) && "number of rows can only the shrunk");
         // TODO Here we could reduce the allocated size of the values array.
-//        this->numRows = numRows;
-        spdlog::error("DenseMatrix<char>: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
+        this->numRows = numRows;
+//        spdlog::error("DenseMatrix<char>: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     [[nodiscard]] size_t getRowSkip() const {

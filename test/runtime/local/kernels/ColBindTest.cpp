@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "run_tests.h"
+
 #include <runtime/local/datagen/GenGivenVals.h>
 #include <runtime/local/datastructures/DenseMatrix.h>
 #include <runtime/local/datastructures/CSRMatrix.h>
@@ -28,11 +30,26 @@
 
 #include <vector>
 
-#include <cstdint>
+#include <csignal>
+#include <csetjmp>
+
+namespace
+{
+    volatile std::sig_atomic_t gSignalStatus;
+    jmp_buf return_from_handler;
+}
+
+void handle_sig_abort(int signal) {
+    spdlog::error("Got an abort signal from ColBindTest.");
+    gSignalStatus = signal;
+//    longjmp(return_from_handler, gSignalStatus);
+throw std::runtime_error("rethrowing colbind non-unique exception");
+}
 
 TEMPLATE_PRODUCT_TEST_CASE("ColBind", TAG_KERNELS, (DenseMatrix), (double, uint32_t)) {
     using DT = TestType;
-    
+    auto dctx = setupContextAndLogger();
+
     auto m0 = genGivenVals<DT>(3, {
         1, 2,
         3, 4,
@@ -61,6 +78,9 @@ TEMPLATE_PRODUCT_TEST_CASE("ColBind", TAG_KERNELS, (DenseMatrix), (double, uint3
 }
 
 TEST_CASE("ColBind - Frame", TAG_KERNELS) {
+    auto dctx = setupContextAndLogger();
+//    std::signal(SIGABRT, handle_sig_abort);
+
     auto c0 = genGivenVals<DenseMatrix<double>>(3, {1, 2, 3});
     auto c1 = genGivenVals<DenseMatrix<double>>(3, {4, 5, 6});
     auto c2 = genGivenVals<DenseMatrix<int64_t>>(3, {10, 20, 30});
@@ -113,10 +133,21 @@ TEST_CASE("ColBind - Frame", TAG_KERNELS) {
     SECTION("non-unique labels") {
         std::vector<Structure *> cols1 = {c2, c3, c4};
         std::string labels1[] = {l0, l1, "c"};
+
         f234 = DataObjectFactory::create<Frame>(cols1, labels1);
-        CHECK_THROWS(colBind<Frame, Frame, Frame>(res, f01, f234, nullptr));
+                CHECK_THROWS(colBind<Frame, Frame, Frame>(res, f01, f234, nullptr));
+
+//        if (setjmp(return_from_handler) == 0) {
+//            try {
+//                CHECK_THROWS(colBind<Frame, Frame, Frame>(res, f01, f234, nullptr));
+//            }
+//            catch (std::exception &e) {
+//                spdlog::info("ColBindTest threw a planned exception in a test. Catch and continue in {}:{}: \n{}",
+//                             __FILE__,
+//                             __LINE__, e.what());
+//            }
+//        }
     }
-    
     DataObjectFactory::destroy(c0);
     DataObjectFactory::destroy(c1);
     DataObjectFactory::destroy(c2);
@@ -129,6 +160,7 @@ TEST_CASE("ColBind - Frame", TAG_KERNELS) {
 TEMPLATE_PRODUCT_TEST_CASE("ColBind", TAG_KERNELS, (CSRMatrix), (double, uint32_t)) {
     using DT = TestType;
     using VT = typename DT::VT;
+    auto dctx = setupContextAndLogger();
 
     size_t numRows = 4;
     size_t numCols = 5;

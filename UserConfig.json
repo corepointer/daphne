@@ -20,7 +20,7 @@
     "library_paths": [],
     "daphnedsl_import_paths": {},
     "logging": [
-        { "log-level-limit": "DEBUG" },
+        { "log-level-limit": "OFF" },
         {
             "comment": "ToDo: multiple sinks and loggers could be configurable here",
             "name": "default",

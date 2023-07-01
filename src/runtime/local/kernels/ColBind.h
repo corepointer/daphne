@@ -45,14 +45,14 @@ struct ColBind {
 
 template<class DTRes, class DTLhs, class DTRhs>
 void colBind(DTRes *& res, const DTLhs * lhs, const DTRhs * rhs, DCTX(ctx)) {
-    try {
+//    try {
         ColBind<DTRes, DTLhs, DTRhs>::apply(res, lhs, rhs, ctx);
-    }
-    catch (std::runtime_error& re) {
-        spdlog::error("Final catch std::runtime_error in {}:{}: \n{}",__FILE__, __LINE__, re.what());
+//    }
+//    catch (std::runtime_error& re) {
+//        spdlog::error("Final catch std::runtime_error in {}:{}: \n{}",__FILE__, __LINE__, re.what());
 //        std::raise(SIGINT);
-        std::abort();
-    }
+//        std::abort();
+//    }
 }
 
 // ****************************************************************************

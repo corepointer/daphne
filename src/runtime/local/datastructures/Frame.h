@@ -308,8 +308,8 @@ public:
     
     void shrinkNumRows(size_t numRows) {
         // TODO Here we could reduce the allocated size of the column arrays.
-//        this->numRows = numRows;
-        spdlog::error("Frame: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
+        this->numRows = numRows;
+//        spdlog::error("Frame: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     const ValueTypeCode * getSchema() const {
