@@ -39,8 +39,8 @@ private:
 protected:
     size_t row_offset{};
     size_t col_offset{};
-    size_t numRows;
-    size_t numCols;
+    const size_t numRows;
+    const size_t numCols;
 
     Structure(size_t numRows, size_t numCols) : refCounter(1), numRows(numRows), numCols(numCols) {
         mdo = std::make_shared<MetaDataObject>();

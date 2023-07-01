@@ -59,16 +59,17 @@ DenseMatrix<ValueType>::DenseMatrix(const DenseMatrix<ValueType> * src, size_t r
         lastAppendedRowIdx(0), lastAppendedColIdx(0)
 {
     assert(src && "src must not be null");
-    assert((rowLowerIncl < src->numRows) && "rowLowerIncl is out of bounds");
-    assert((rowUpperExcl <= src->numRows) && "rowUpperExcl is out of bounds");
+    assert((rowLowerIncl < src->getNumRows()) && "rowLowerIncl is out of bounds");
+    assert((rowUpperExcl <= src->getNumRows()) && "rowUpperExcl is out of bounds");
     assert((rowLowerIncl < rowUpperExcl) && "rowLowerIncl must be lower than rowUpperExcl");
-    assert((colLowerIncl < src->numCols) && "colLowerIncl is out of bounds");
-    assert((colUpperExcl <= src->numCols) && "colUpperExcl is out of bounds");
+    assert((colLowerIncl < src->getNumCols()) && "colLowerIncl is out of bounds");
+    assert((colUpperExcl <= src->getNumCols()) && "colUpperExcl is out of bounds");
     assert((colLowerIncl < colUpperExcl) && "colLowerIncl must be lower than colUpperExcl");
     
     this->row_offset = rowLowerIncl;
     this->col_offset = colLowerIncl;
     rowSkip = src->rowSkip;
+    src->increaseRefCounter();
 
     // ToDo: manage host mem (values) in a data placement
     if(src->values) {

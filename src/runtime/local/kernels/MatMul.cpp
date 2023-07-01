@@ -287,6 +287,7 @@ void MatMul<DenseMatrix<VT>, DenseMatrix<VT>, DenseMatrix<VT>>::apply(DenseMatri
     }
     else { // Matrix-Matrix
         spdlog::get("default")->debug("lda {}, ldb {} ldc {}", lda, ldb, ldc);
+        spdlog::debug("launch_gemm<{}>(C[{}x{}], A[{},{}], B[{}x{}], transA:{}, transB:{})", typeid(alpha).name(), m, n, m, k, k, n, transa, transb);
         launch_gemm<VT>(transa, transb, nr1, nc2, nc1, alpha, A, lda, B, ldb, beta, C, ldc);
     }
 }

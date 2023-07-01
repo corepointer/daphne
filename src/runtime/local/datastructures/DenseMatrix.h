@@ -96,7 +96,10 @@ class DenseMatrix : public Matrix<ValueType>
     DenseMatrix(const DenseMatrix<ValueType> * src, size_t rowLowerIncl, size_t rowUpperExcl, size_t colLowerIncl,
             size_t colUpperExcl);
 
-    ~DenseMatrix() override = default;
+    ~DenseMatrix() override {
+//        override = default;
+spdlog::trace("DenseMatrix destruction. isView: {}", isView());
+    }
 
     [[nodiscard]] size_t pos(size_t rowIdx, size_t colIdx, bool rowSkipOverride = false) const {
         if(rowIdx >= numRows)
@@ -168,7 +171,8 @@ public:
     void shrinkNumRows(size_t numRows) {
         assert((numRows <= this->numRows) && "number of rows can only the shrunk");
         // TODO Here we could reduce the allocated size of the values array.
-        this->numRows = numRows;
+//        this->numRows = numRows;
+        spdlog::error("DenseMatrix: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     [[nodiscard]] size_t getRowSkip() const { return rowSkip; }
@@ -429,7 +433,8 @@ public:
     void shrinkNumRows(size_t numRows) {
         assert((numRows <= this->numRows) && "number of rows can only the shrunk");
         // TODO Here we could reduce the allocated size of the values array.
-        this->numRows = numRows;
+//        this->numRows = numRows;
+        spdlog::error("DenseMatrix<char>: shrinkNumRows from {} to {}", this->getNumRows(), numRows);
     }
     
     [[nodiscard]] size_t getRowSkip() const {

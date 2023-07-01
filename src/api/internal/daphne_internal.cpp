@@ -538,6 +538,8 @@ int startDAPHNE(int argc, const char** argv, DaphneLibResult* daphneLibRes, int 
     try{
         auto engine = executor.createExecutionEngine(moduleOp);
         tpBegExec = clock::now();
+
+        // set jump address for catching exceptions in kernel libraries via signal handling
         if(setjmp(return_from_handler) == 0) {
             auto error = engine->invoke("main");
             if (error) {

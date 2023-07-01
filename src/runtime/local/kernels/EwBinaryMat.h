@@ -24,6 +24,8 @@
 #include <runtime/local/kernels/BinaryOpCode.h>
 #include <runtime/local/kernels/EwBinarySca.h>
 
+#include <spdlog/spdlog.h>
+
 #include <cassert>
 #include <cstddef>
 
@@ -63,13 +65,16 @@ struct EwBinaryMat<DenseMatrix<VTres>, DenseMatrix<VTlhs>, DenseMatrix<VTrhs>> {
 
         if(res == nullptr)
             res = DataObjectFactory::create<DenseMatrix<VTres>>(numRowsLhs, numColsLhs, false);
-        
+        else
+            spdlog::debug("res ptr was not null!");
         const VTlhs * valuesLhs = lhs->getValues();
         const VTrhs * valuesRhs = rhs->getValues();
         VTres * valuesRes = res->getValues();
         
         EwBinaryScaFuncPtr<VTres, VTlhs, VTrhs> func = getEwBinaryScaFuncPtr<VTres, VTlhs, VTrhs>(opCode);
-        
+
+        spdlog::debug("EwBinaryMat dims:\n\tlhs: {}x{}\n\trhs: {}x{}", numRowsLhs, numColsLhs, numRowsRhs, numColsRhs);
+
         if(numRowsLhs == numRowsRhs && numColsLhs == numColsRhs) {
             // matrix op matrix (same size)
             for(size_t r = 0; r < numRowsLhs; r++) {
