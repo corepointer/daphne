@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "run_tests.h"
+
 #include <api/cli/StatusCode.h>
 #include <api/cli/Utils.h>
 

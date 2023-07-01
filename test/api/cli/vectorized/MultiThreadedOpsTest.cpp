@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+#include "run_tests.h"
+
 #include <api/cli/Utils.h>
 
 #include <tags.h>
@@ -31,6 +33,7 @@ auto dirPath = "test/api/cli/vectorized/"sv;
     TEST_CASE(std::string(name)+std::string(suffix), TAG_OPERATIONS) { \
         std::string prefix(dirPath);\
         prefix += (name);\
+        auto dctx = setupContextAndLogger(); \
         compareDaphneToRef(prefix + ".txt", prefix + ".daphne", (param)); \
     }
 #define MAKE_TEST_CASE_SPARSE(name) \

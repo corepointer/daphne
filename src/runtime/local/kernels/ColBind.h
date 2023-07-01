@@ -23,9 +23,12 @@
 #include <runtime/local/datastructures/CSRMatrix.h>
 #include <runtime/local/datastructures/Frame.h>
 
+#include "llvm/Support/Error.h"
+
 #include <cassert>
 #include <cstddef>
 #include <cstring>
+#include <csignal>
 
 // ****************************************************************************
 // Struct for partial template specialization
@@ -42,7 +45,14 @@ struct ColBind {
 
 template<class DTRes, class DTLhs, class DTRhs>
 void colBind(DTRes *& res, const DTLhs * lhs, const DTRhs * rhs, DCTX(ctx)) {
-    ColBind<DTRes, DTLhs, DTRhs>::apply(res, lhs, rhs, ctx);
+    try {
+        ColBind<DTRes, DTLhs, DTRhs>::apply(res, lhs, rhs, ctx);
+    }
+    catch (std::runtime_error& re) {
+        spdlog::error("Final catch std::runtime_error in {}:{}: \n{}",__FILE__, __LINE__, re.what());
+//        std::raise(SIGINT);
+        std::abort();
+    }
 }
 
 // ****************************************************************************

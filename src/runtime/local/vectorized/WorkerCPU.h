@@ -55,6 +55,9 @@ public:
             sched_setaffinity(0, sizeof(cpu_set_t), &cpuset);
         }
 
+//        spdlog::debug("_physical_ids.size(): {}", _physical_ids.size());
+//        spdlog::debug("_threadID: {}", _threadID);
+
         int currentDomain = _physical_ids[_threadID];
         int targetQueue = _threadID;
         if( _queueMode == 0 ) {

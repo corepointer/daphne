@@ -20,11 +20,11 @@
     "library_paths": [],
     "daphnedsl_import_paths": {},
     "logging": [
-        { "log-level-limit": "OFF" },
+        { "log-level-limit": "DEBUG" },
         {
             "comment": "ToDo: multiple sinks and loggers could be configurable here",
             "name": "default",
-            "level": "INFO",
+            "level": "DEBUG",
             "filename": "daphne-output.txt",
             "format": "[%H:%M:%S] [%n] [%^---%L---%$] %v"
         },

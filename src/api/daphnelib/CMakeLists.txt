@@ -18,7 +18,7 @@
 # The shared library for using DAPHNE from Python.
 
 # TODO This target would also need the LIB_DEPS from daphne
-
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -v -lgcc -lstdc++")
 add_library(daphnelib SHARED daphnelib.cpp)
 set_target_properties(daphnelib PROPERTIES LIBRARY_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR}/lib)
 target_link_libraries(daphnelib PRIVATE DaphneInternal)
