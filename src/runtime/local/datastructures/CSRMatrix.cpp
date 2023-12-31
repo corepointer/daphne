@@ -32,13 +32,13 @@ CSRMatrix<ValueType>::CSRMatrix(size_t maxNumRows, size_t numCols, size_t maxNum
     std::unique_ptr<IAllocationDescriptor> rptr_alloc;
 
     if (!allocInfo) {
-        values = std::shared_ptr<ValueType>(new ValueType[maxNumNonZeros], std::default_delete<ValueType[]>());
+        values = std::shared_ptr<ValueType[]>(new ValueType[maxNumNonZeros], std::default_delete<ValueType[]>());
         auto bytes = std::reinterpret_pointer_cast<std::byte>(values);
         val_alloc = AllocationDescriptorHost::createHostAllocation(bytes, val_buf_size, zero);
-        colIdxs = std::shared_ptr<size_t>(new size_t[maxNumNonZeros], std::default_delete<size_t[]>());
+        colIdxs = std::shared_ptr<size_t[]>(new size_t[maxNumNonZeros], std::default_delete<size_t[]>());
         bytes = std::reinterpret_pointer_cast<std::byte>(colIdxs);
         cidx_alloc = AllocationDescriptorHost::createHostAllocation(bytes, cidx_buf_size, zero);
-        rowOffsets = std::shared_ptr<size_t>(new size_t[numRows + 1], std::default_delete<size_t[]>());
+        rowOffsets = std::shared_ptr<size_t[]>(new size_t[numRows + 1], std::default_delete<size_t[]>());
         bytes = std::reinterpret_pointer_cast<std::byte>(rowOffsets);
         rptr_alloc = AllocationDescriptorHost::createHostAllocation(bytes, rptr_buf_size, zero);
     } else {
@@ -48,9 +48,9 @@ CSRMatrix<ValueType>::CSRMatrix(size_t maxNumRows, size_t numCols, size_t maxNum
 
         // ToDo: refactor data storage into memory management
         if (allocInfo->getType() == ALLOCATION_TYPE::HOST) {
-            values = std::reinterpret_pointer_cast<ValueType>(val_alloc->getData());
-            colIdxs = std::reinterpret_pointer_cast<size_t>(cidx_alloc->getData());
-            rowOffsets = std::reinterpret_pointer_cast<size_t>(rptr_alloc->getData());
+            values = std::reinterpret_pointer_cast<ValueType[]>(val_alloc->getData());
+            colIdxs = std::reinterpret_pointer_cast<size_t[]>(cidx_alloc->getData());
+            rowOffsets = std::reinterpret_pointer_cast<size_t[]>(rptr_alloc->getData());
         }
     }
 
