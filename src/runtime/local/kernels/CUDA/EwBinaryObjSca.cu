@@ -82,6 +82,22 @@ namespace CUDA {
             NeqOp<VT> op;
             ewBinMatSca<<<gridSize, blockSize>>>(res->getValues(&alloc_desc), lhs->getValues(&alloc_desc), rhs, N, op);
         }
+        else if (opCode == BinaryOpCode::MAX) {
+            MaxOp<VT> op;
+            CHECK_CUDART(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, ewBinMatSca<VT, decltype(op)>, 0, 0));
+            gridSize = (N + blockSize - 1) / blockSize;
+            ewBinMatSca<<<gridSize, blockSize>>>(res->getValues(&alloc_desc), lhs->getValues(&alloc_desc), rhs, N, op);
+        }
+        else if (opCode == BinaryOpCode::MIN) {
+            MinOp<VT> op;
+            CHECK_CUDART(cudaOccupancyMaxPotentialBlockSize(&minGridSize, &blockSize, ewBinMatSca<VT, decltype(op)>, 0, 0));
+            gridSize = (N + blockSize - 1) / blockSize;
+            ewBinMatSca<<<gridSize, blockSize>>>(res->getValues(&alloc_desc), lhs->getValues(&alloc_desc), rhs, N, op);
+        }
+        else if (opCode == BinaryOpCode::NEQ) {
+            NeqOp<VT> op;
+            ewBinMatSca<<<gridSize, blockSize>>>(res->getValues(&alloc_desc), lhs->getValues(&alloc_desc), rhs, N, op);
+        }
         else {
             throw std::runtime_error(fmt::format("Unknown opCode {} for EwBinaryObjSca", static_cast<uint32_t>(opCode)));
         }
