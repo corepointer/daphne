@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-#ifdef USE_CUDA
 #include "run_tests.h"
 
-#include <api/cli/DaphneUserConfig.h>
 #include <runtime/local/datagen/GenGivenVals.h>
 #include <runtime/local/datastructures/DenseMatrix.h>
-#include "runtime/local/kernels/CUDA/BatchNorm.h"
-#include <runtime/local/kernels/CheckEq.h>
 #include <runtime/local/kernels/CheckEqApprox.h>
+#include "runtime/local/kernels/BatchNorm2DBackward.h"
 
 #include <cassert>
 #include <catch.hpp>
 #include <tags.h>
+
+#ifdef USE_CUDA
+
+#include "runtime/local/kernels/CUDA/BatchNorm.h"
 
 template<class DT>
 void checkBatchNorm2DBackwardCUDA(const DT* in, const DT* dOut, const DT* gamma, const DT* mean, const DT* invVar, const DT* exp1, 
@@ -64,7 +65,7 @@ TEMPLATE_PRODUCT_TEST_CASE("batch_norm_bwd_cuda", TAG_DNN, (DenseMatrix), (float
                                       
     auto gamma = genGivenVals<DT>(3, { 1, 1, 1 });
     auto mean = genGivenVals<DT>(3, { 2.5, 6.5, 10.5 });
-    auto invVar = genGivenVals<DT>(3, { 1 / std::sqrt(1.25 + 1e-5), 1 / std::sqrt(1.25 + 1e-5), 1 / std::sqrt(1.25 + 1e-5) });
+    auto invVar = genGivenVals<DT>(3, { 1 / std::sqrt(1.25f + 1e-5f), 1 / std::sqrt(1.25f + 1e-5f), 1 / std::sqrt(1.25f + 1e-5f) });
     auto res1 = genGivenVals<DT>(2, {-1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05,
                                      -1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05, 
                                      -1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05,
@@ -75,7 +76,6 @@ TEMPLATE_PRODUCT_TEST_CASE("batch_norm_bwd_cuda", TAG_DNN, (DenseMatrix), (float
     auto res3 = genGivenVals<DT>(3, {20, 52, 84 });
 
     checkBatchNorm2DBackwardCUDA(in, dOut, gamma, mean, invVar, res1, res2, res3, dctx.get());
-    //std::cout<<"gpu"<<std::endl;
 
     DataObjectFactory::destroy(in);
     DataObjectFactory::destroy(dOut);
@@ -87,22 +87,6 @@ TEMPLATE_PRODUCT_TEST_CASE("batch_norm_bwd_cuda", TAG_DNN, (DenseMatrix), (float
     DataObjectFactory::destroy(res3);
 }
 #endif // USE_CUDA
-
-#include "run_tests.h"
-
-#include <api/cli/DaphneUserConfig.h>
-#include <runtime/local/datagen/GenGivenVals.h>
-#include <runtime/local/datastructures/DenseMatrix.h>
-#include "runtime/local/kernels/BatchNorm2DBackward.h"
-#include "runtime/local/kernels/CUDA/BatchNorm.h"
-#include <runtime/local/kernels/CheckEq.h>
-#include <runtime/local/kernels/CheckEqApprox.h>
-
-#include <cassert>
-#include <catch.hpp>
-#include <tags.h>
-
-#include <iostream>
 
 template<class DT>
 void checkBatchNorm2DBackward(const DT* in, const DT* dOut, const DT* gamma, const DT* mean, const DT* invVar, const DT* exp1, 
@@ -147,7 +131,7 @@ TEMPLATE_PRODUCT_TEST_CASE("batch_norm_bwd", TAG_DNN, (DenseMatrix), (float, dou
                                       
     auto gamma = genGivenVals<DT>(3, { 1, 1, 1 });
     auto mean = genGivenVals<DT>(3, { 2.5, 6.5, 10.5 });
-    auto invVar = genGivenVals<DT>(3, { 1 / std::sqrt(1.25 + 1e-5), 1 / std::sqrt(1.25 + 1e-5), 1 / std::sqrt(1.25 + 1e-5) });
+    auto invVar = genGivenVals<DT>(3, { 1 / std::sqrt(1.25f + 1e-5f), 1 / std::sqrt(1.25f + 1e-5f), 1 / std::sqrt(1.25f + 1e-5f) });
     auto res1 = genGivenVals<DT>(2, {-1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05,
                                      -1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05, 
                                      -1.0733e-05, -3.5777e-06, 3.5777e-06,  1.0733e-05,
@@ -158,8 +142,6 @@ TEMPLATE_PRODUCT_TEST_CASE("batch_norm_bwd", TAG_DNN, (DenseMatrix), (float, dou
     auto res3 = genGivenVals<DT>(3, {20, 52, 84 });
 
     checkBatchNorm2DBackward(in, dOut, gamma, mean, invVar, res1, res2, res3, dctx.get());
-
-    //std::cout<<"cpu"<<std::endl;
 
     DataObjectFactory::destroy(in);
     DataObjectFactory::destroy(dOut);
