@@ -1,1 +1,0 @@
-./build-containers.sh: line 55: docker: command not found
