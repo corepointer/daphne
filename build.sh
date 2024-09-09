@@ -787,7 +787,7 @@ if [ $WITH_DEPS -gt 0 ]; then
     fi
     if ! is_dependency_installed "${dep_absl[@]}"; then
         cmake -S "$abslPath" -B "$buildPrefix/absl" -G Ninja -DCMAKE_POSITION_INDEPENDENT_CODE=TRUE \
-            -DCMAKE_INSTALL_PREFIX="$installPrefix" -DCMAKE_CXX_STANDARD=17 -DABSL_PROPAGATE_CXX_STD=ON
+            -DCMAKE_INSTALL_PREFIX="$installPrefix" -DCMAKE_CXX_STANDARD=20 -DABSL_PROPAGATE_CXX_STD=ON
         cmake --build "$buildPrefix/absl" --target install/strip
         dependency_install_success "${dep_absl[@]}"
     else
@@ -848,7 +848,7 @@ if [ $WITH_DEPS -gt 0 ]; then
             -DCMAKE_BUILD_TYPE=Release \
             -DgRPC_INSTALL=ON \
             -DgRPC_BUILD_TESTS=OFF \
-            -DCMAKE_CXX_STANDARD=17 \
+            -DCMAKE_CXX_STANDARD=20 \
             -DCMAKE_INCLUDE_PATH="$installPrefix/include" \
             -DgRPC_ABSL_PROVIDER=package \
             -DgRPC_ZLIB_PROVIDER=package
