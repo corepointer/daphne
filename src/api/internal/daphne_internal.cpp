@@ -61,7 +61,7 @@ using namespace mlir;
 using namespace llvm::cl;
 
 void parseScriptArgs(const llvm::cl::list<string> &scriptArgsCli, unordered_map<string, string> &scriptArgsFinal) {
-    for (const std::string &pair : scriptArgsCli) {
+    for (const std::string &pair: scriptArgsCli) {
         size_t pos = pair.find('=');
         if (pos == string::npos)
             throw std::runtime_error("script arguments must be specified as "
@@ -74,17 +74,18 @@ void parseScriptArgs(const llvm::cl::list<string> &scriptArgsCli, unordered_map<
         scriptArgsFinal.emplace(argName, argValue);
     }
 }
+
 void printVersion(llvm::raw_ostream &os) {
     // TODO Include some of the important build flags into the version string.
     os << "DAPHNE Version 0.3\n"
-       << "An Open and Extensible System Infrastructure for Integrated Data "
-          "Analysis Pipelines\n"
-       << "https://github.com/daphne-eu/daphne\n";
+            << "An Open and Extensible System Infrastructure for Integrated Data "
+            "Analysis Pipelines\n"
+            << "https://github.com/daphne-eu/daphne\n";
 }
 
 namespace {
-volatile std::sig_atomic_t gSignalStatus;
-jmp_buf return_from_handler;
+    volatile std::sig_atomic_t gSignalStatus;
+    jmp_buf return_from_handler;
 } // namespace
 
 void handleSignals(int signal) {
@@ -152,8 +153,8 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
         init(ALLOCATION_TYPE::DIST_MPI));
     static opt<size_t> maxDistrChunkSize("max-distr-chunk-size", cat(distributedBackEndSetupOptions),
                                          desc("Define the maximum chunk size per message for the distributed "
-                                              "runtime (in bytes)"
-                                              "(default is close to maximum allowed ~2GB)"),
+                                             "runtime (in bytes)"
+                                             "(default is close to maximum allowed ~2GB)"),
                                          init(std::numeric_limits<int>::max() - 1024));
 
     // HDFS knobs
@@ -176,10 +177,10 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
                clEnumVal(FISS, "Fixed-increase self-scheduling"), clEnumVal(VISS, "Variable-increase self-scheduling"),
                clEnumVal(PLS, "Performance loop-based self-scheduling"),
                clEnumVal(MSTATIC, "Modified version of Static, i.e., instead "
-                                  "of n/p, it uses n/(4*p) where n is number "
-                                  "of tasks and p is number of threads"),
+                         "of n/p, it uses n/(4*p) where n is number "
+                         "of tasks and p is number of threads"),
                clEnumVal(MFSC, "Modified version of fixed size chunk self-scheduling, "
-                               "i.e., MFSC does not require profiling information as FSC"),
+                         "i.e., MFSC does not require profiling information as FSC"),
                clEnumVal(PSS, "Probabilistic self-scheduling"), clEnumVal(AUTO, "Automatic partitioning")),
         init(STATIC));
 
@@ -199,16 +200,16 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 
     static opt<int> numberOfThreads("num-threads", cat(schedulingOptions),
                                     desc("Define the number of the CPU threads used by the vectorized "
-                                         "execution engine "
-                                         "(default is equal to the number of physical cores on the target "
-                                         "node that executes the code)"));
+                                        "execution engine "
+                                        "(default is equal to the number of physical cores on the target "
+                                        "node that executes the code)"));
     static opt<int> minimumTaskSize("grain-size", cat(schedulingOptions),
                                     desc("Define the minimum grain size of a task (default is 1)"), init(1));
     static opt<bool> useVectorizedPipelines("vec", cat(schedulingOptions), desc("Enable vectorized execution engine"));
     static opt<bool> useDistributedRuntime("distributed", cat(daphneOptions), desc("Enable distributed runtime"));
     static opt<bool> prePartitionRows("pre-partition", cat(schedulingOptions),
                                       desc("Partition rows into the number of queues before applying "
-                                           "scheduling technique"));
+                                          "scheduling technique"));
     static opt<bool> pinWorkers("pin-workers", cat(schedulingOptions), desc("Pin workers to CPU cores"));
     static opt<bool> hyperthreadingEnabled("hyperthreading", cat(schedulingOptions),
                                            desc("Utilize multiple logical CPUs located on the same physical CPU"));
@@ -219,61 +220,62 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 
     static opt<bool> noObjRefMgnt("no-obj-ref-mgnt", cat(daphneOptions),
                                   desc("Switch off garbage collection by not managing data "
-                                       "objects' reference counters"));
+                                      "objects' reference counters"));
     static opt<bool> noIPAConstPropa("no-ipa-const-propa", cat(daphneOptions),
                                      desc("Switch off inter-procedural constant propagation"));
     static opt<bool> noPhyOpSelection("no-phy-op-selection", cat(daphneOptions),
                                       desc("Switch off physical operator selection, use default kernels for "
-                                           "all operations"));
+                                          "all operations"));
     static opt<bool> selectMatrixRepr("select-matrix-repr", cat(daphneOptions),
                                       desc("Automatically choose physical matrix representations "
-                                           "(e.g., dense/sparse)"));
+                                          "(e.g., dense/sparse)"));
     static alias selectMatrixReprAlias( // to still support the longer old form
         "select-matrix-representations", aliasopt(selectMatrixRepr), desc("Alias for --select-matrix-repr"));
     static opt<bool> cuda("cuda", cat(daphneOptions), desc("Use CUDA"));
     static opt<bool> fpgaopencl("fpgaopencl", cat(daphneOptions), desc("Use FPGAOPENCL"));
+    static opt<bool> oneapi("oneapi", cat(daphneOptions), desc("Use ONEAPI"));
     static opt<string> libDir("libdir", cat(daphneOptions),
                               desc("The directory containing the kernel catalog files "
-                                   "(typically, but not necessarily, along with the kernel shared "
-                                   "libraries)"));
+                                  "(typically, but not necessarily, along with the kernel shared "
+                                  "libraries)"));
 
     static opt<bool> mlirCodegen("mlir-codegen", cat(daphneOptions),
                                  desc("Enables lowering of certain DaphneIR operations on DenseMatrix "
-                                      "to low-level MLIR operations."));
+                                     "to low-level MLIR operations."));
     static opt<int> matmul_vec_size_bits("matmul-vec-size-bits", cat(daphneOptions),
                                          desc("Set the vector size to be used in the lowering of the MatMul "
-                                              "operation if possible. Value of 0 is interpreted as off switch."),
+                                             "operation if possible. Value of 0 is interpreted as off switch."),
                                          init(0));
     static opt<bool> matmul_tile("matmul-tile", cat(daphneOptions),
                                  desc("Enables loop tiling in the lowering of the MatMul operation."));
     static opt<int> matmul_unroll_factor("matmul-unroll-factor", cat(daphneOptions),
                                          desc("Factor by which to unroll the finally resulting inner most loop "
-                                              "in the lowered MatMul if tiling is used."),
+                                             "in the lowered MatMul if tiling is used."),
                                          init(1));
     static opt<int> matmul_unroll_jam_factor("matmul-unroll-jam-factor", cat(daphneOptions),
                                              desc("Factor by which to unroll jam the two inner most loop in the "
-                                                  "lowered MatMul if tiling is used."),
+                                                 "lowered MatMul if tiling is used."),
                                              init(4));
     static opt<int> matmul_num_vec_registers("matmul-num-vec-registers", cat(daphneOptions),
                                              desc("Number of vector registers. Used during automatic tiling in "
-                                                  "lowering of MatMulOp"),
+                                                 "lowering of MatMulOp"),
                                              init(16));
     static llvm::cl::list<unsigned> matmul_fixed_tile_sizes(
         "matmul-fixed-tile-sizes", cat(daphneOptions),
         desc("Set fixed tile sizes to be used for the lowering of MatMul if "
-             "tiling is used. This also enables tiling."),
+            "tiling is used. This also enables tiling."),
         CommaSeparated);
     static opt<bool> matmul_invert_loops("matmul-invert-loops", cat(daphneOptions),
                                          desc("Enable inverting of the inner two loops in the matrix "
-                                              "multiplication as a fallback option, if tiling is not possible "
-                                              "or deactivated."));
+                                             "multiplication as a fallback option, if tiling is not possible "
+                                             "or deactivated."));
 
     static opt<bool> performHybridCodegen("mlir-hybrid-codegen", cat(daphneOptions),
                                           desc("Enables prototypical hybrid code generation combining "
-                                               "pre-compiled kernels and MLIR code generation."));
+                                              "pre-compiled kernels and MLIR code generation."));
     static opt<string> kernelExt("kernel-ext", cat(daphneOptions),
                                  desc("Additional kernel extension to register "
-                                      "(path to a kernel catalog JSON file)."));
+                                     "(path to a kernel catalog JSON file)."));
 
     enum ExplainArgs {
         kernels,
@@ -293,13 +295,13 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     static llvm::cl::list<ExplainArgs> explainArgList(
         "explain", cat(daphneOptions),
         llvm::cl::desc("Show DaphneIR after certain compiler passes (separate "
-                       "multiple values by comma, the order is irrelevant)"),
+            "multiple values by comma, the order is irrelevant)"),
         llvm::cl::values(clEnumVal(parsing, "Show DaphneIR after parsing"),
                          clEnumVal(parsing_simplified, "Show DaphneIR after parsing and some simplifications"),
                          clEnumVal(sql, "Show DaphneIR after SQL parsing"),
                          clEnumVal(property_inference, "Show DaphneIR after property inference"),
                          clEnumVal(select_matrix_repr, "Show DaphneIR after selecting "
-                                                       "physical matrix representations"),
+                                   "physical matrix representations"),
                          clEnumVal(phy_op_selection, "Show DaphneIR after selecting physical operators"),
                          clEnumVal(type_adaptation, "Show DaphneIR after adapting types to available kernels"),
                          clEnumVal(vectorized, "Show DaphneIR after vectorization"),
@@ -311,8 +313,8 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 
     static llvm::cl::list<string> scriptArgs1("args", cat(daphneOptions),
                                               desc("Alternative way of specifying arguments to the DaphneDSL "
-                                                   "script; must be a comma-separated list of name-value-pairs, "
-                                                   "e.g., `--args x=1,y=2.2`"),
+                                                  "script; must be a comma-separated list of name-value-pairs, "
+                                                  "e.g., `--args x=1,y=2.2`"),
                                               CommaSeparated);
     const std::string configFileInitValue = "-";
     static opt<string> configFile("config", cat(daphneOptions),
@@ -324,8 +326,8 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     static opt<bool> enableProfiling("enable-profiling", cat(daphneOptions), desc("Enable profiling support"));
     static opt<bool> timing("timing", cat(daphneOptions),
                             desc("Enable timing of high-level steps (start-up, "
-                                 "parsing, compilation, execution) and print "
-                                 "the times to stderr in JSON format"));
+                                "parsing, compilation, execution) and print "
+                                "the times to stderr in JSON format"));
 
     // Positional arguments ---------------------------------------------------
 
@@ -345,10 +347,10 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     HideUnrelatedOptions(visibleCategories);
 
     extrahelp("\nEXAMPLES:\n\n"
-              "  daphne example.daphne\n"
-              "  daphne --vec example.daphne x=1 y=2.2 z=\"foo\"\n"
-              "  daphne --vec --args x=1,y=2.2,z=\"foo\" example.daphne\n"
-              "  daphne --vec --args x=1,y=2.2 example.daphne z=\"foo\"\n");
+        "  daphne example.daphne\n"
+        "  daphne --vec example.daphne x=1 y=2.2 z=\"foo\"\n"
+        "  daphne --vec --args x=1,y=2.2,z=\"foo\" example.daphne\n"
+        "  daphne --vec --args x=1,y=2.2 example.daphne z=\"foo\"\n");
     SetVersionPrinter(&printVersion);
     ParseCommandLineOptions(argc, argv,
                             "The DAPHNE Prototype.\n\nThis program compiles "
@@ -432,53 +434,53 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     }
     if (user_config.use_hdfs && (user_config.hdfs_Address == "" || user_config.hdfs_username == "")) {
         spdlog::warn("HDFS is enabled, but the HDFS IP address or username "
-                     "were not provided.");
+            "were not provided.");
     }
 #ifndef USE_HDFS
     if (user_config.use_hdfs) {
         throw std::runtime_error("you are trying to use HDFS, but Daphne was "
-                                 "not build with --hdfs option\n");
+            "not build with --hdfs option\n");
     }
 #endif
 
-    for (auto explain : explainArgList) {
+    for (auto explain: explainArgList) {
         switch (explain) {
-        case kernels:
-            user_config.explain_kernels = true;
-            break;
-        case llvm:
-            user_config.explain_llvm = true;
-            break;
-        case parsing:
-            user_config.explain_parsing = true;
-            break;
-        case parsing_simplified:
-            user_config.explain_parsing_simplified = true;
-            break;
-        case property_inference:
-            user_config.explain_property_inference = true;
-            break;
-        case select_matrix_repr:
-            user_config.explain_select_matrix_repr = true;
-            break;
-        case sql:
-            user_config.explain_sql = true;
-            break;
-        case phy_op_selection:
-            user_config.explain_phy_op_selection = true;
-            break;
-        case type_adaptation:
-            user_config.explain_type_adaptation = true;
-            break;
-        case vectorized:
-            user_config.explain_vectorized = true;
-            break;
-        case obj_ref_mgnt:
-            user_config.explain_obj_ref_mgnt = true;
-            break;
-        case mlir_codegen:
-            user_config.explain_mlir_codegen = true;
-            break;
+            case kernels:
+                user_config.explain_kernels = true;
+                break;
+            case llvm:
+                user_config.explain_llvm = true;
+                break;
+            case parsing:
+                user_config.explain_parsing = true;
+                break;
+            case parsing_simplified:
+                user_config.explain_parsing_simplified = true;
+                break;
+            case property_inference:
+                user_config.explain_property_inference = true;
+                break;
+            case select_matrix_repr:
+                user_config.explain_select_matrix_repr = true;
+                break;
+            case sql:
+                user_config.explain_sql = true;
+                break;
+            case phy_op_selection:
+                user_config.explain_phy_op_selection = true;
+                break;
+            case type_adaptation:
+                user_config.explain_type_adaptation = true;
+                break;
+            case vectorized:
+                user_config.explain_vectorized = true;
+                break;
+            case obj_ref_mgnt:
+                user_config.explain_obj_ref_mgnt = true;
+                break;
+            case mlir_codegen:
+                user_config.explain_mlir_codegen = true;
+                break;
         }
     }
 
@@ -495,7 +497,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
         MPI_Comm_size(MPI_COMM_WORLD, &size);
         if (size <= 1) {
             throw std::runtime_error("you need to rerun with at least 2 MPI "
-                                     "ranks (1 Master + 1 Worker)\n");
+                "ranks (1 Master + 1 Worker)\n");
         }
         if (*id != COORDINATOR) {
             return *id;
@@ -509,20 +511,20 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 #endif
         if (device_count < 1)
             spdlog::warn("CUDA ops requested by user option but no suitable "
-                         "device found");
+                "device found");
         else {
             user_config.use_cuda = true;
         }
     }
 
-    if (fpgaopencl) {
-        user_config.use_fpgaopencl = true;
-    }
+    if (fpgaopencl) { user_config.use_fpgaopencl = true; }
+
+    if (oneapi) { user_config.use_oneapi = true; }
 
     if (enableProfiling) {
 #ifndef USE_PAPI
         throw std::runtime_error("you are trying to use profiling, but daphne "
-                                 "was built with --no-papi\n");
+            "was built with --no-papi\n");
 #else
         user_config.enable_profiling = true;
 #endif
@@ -598,7 +600,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     } catch (std::exception &e) {
         logErrorDaphneLibAware(daphneLibRes, "Lowering pipeline error.{}\nPassManager failed module lowering, "
                                              "responsible IR written to module_fail.log.\n" +
-                                                 std::string(e.what()));
+                                             std::string(e.what()));
         return StatusCode::PASS_ERROR;
     } catch (...) {
         logErrorDaphneLibAware(daphneLibRes, "Lowering pipeline error: Unknown exception");
@@ -624,7 +626,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
             logErrorDaphneLibAware(daphneLibRes, "Got an abort signal from the execution engine. Most likely an "
                                                  "exception in a shared library. Check logs!\n"
                                                  "Execution error: Returning from signal " +
-                                                     std::to_string(gSignalStatus));
+                                                 std::to_string(gSignalStatus));
             return StatusCode::EXECUTION_ERROR;
         }
     } catch (std::runtime_error &re) {
@@ -638,11 +640,11 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 
     if (timing) {
         // Calculate durations of the individual high-level steps of DAPHNE.
-        double durStrt = chrono::duration_cast<chrono::duration<double>>(tpBegPars - tpBeg).count();
-        double durPars = chrono::duration_cast<chrono::duration<double>>(tpBegComp - tpBegPars).count();
-        double durComp = chrono::duration_cast<chrono::duration<double>>(tpBegExec - tpBegComp).count();
-        double durExec = chrono::duration_cast<chrono::duration<double>>(tpEnd - tpBegExec).count();
-        double durTotal = chrono::duration_cast<chrono::duration<double>>(tpEnd - tpBeg).count();
+        double durStrt = chrono::duration_cast<chrono::duration<double> >(tpBegPars - tpBeg).count();
+        double durPars = chrono::duration_cast<chrono::duration<double> >(tpBegComp - tpBegPars).count();
+        double durComp = chrono::duration_cast<chrono::duration<double> >(tpBegExec - tpBegComp).count();
+        double durExec = chrono::duration_cast<chrono::duration<double> >(tpEnd - tpBegExec).count();
+        double durTotal = chrono::duration_cast<chrono::duration<double> >(tpEnd - tpBeg).count();
         // ToDo: use logger
         // Output durations in JSON.
         std::cerr << "{";
@@ -665,7 +667,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
 
 int mainInternal(int argc, const char **argv, DaphneLibResult *daphneLibRes) {
     int id = -1; // this  -1 would not change if the user did not select mpi
-                 // backend during execution
+    // backend during execution
 
     // Initialize user configuration.
     DaphneUserConfig user_config{};

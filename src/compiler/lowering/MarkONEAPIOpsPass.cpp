@@ -13,17 +13,15 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
 #ifdef USE_ONEAPI
-#include "compiler/CompilerUtils.h"
+#include "compiler/utils/CompilerUtils.h"
 #include "ir/daphneir/Daphne.h"
 #include "ir/daphneir/Passes.h"
-#include <mlir/IR/BlockAndValueMapping.h>
-
-#include <iostream>
 
 using namespace mlir;
 
-struct MarkONEAPIOpsPass : public PassWrapper<MarkONEAPIOpsPass, FunctionPass> {
+struct MarkONEAPIOpsPass : public PassWrapper<MarkONEAPIOpsPass, OperationPass<func::FuncOp>> {
     
     /**
      * @brief User configuration influencing the rewrite pass
@@ -33,16 +31,15 @@ struct MarkONEAPIOpsPass : public PassWrapper<MarkONEAPIOpsPass, FunctionPass> {
     explicit MarkONEAPIOpsPass(const DaphneUserConfig& cfg) : cfg(cfg) {
     }
     
-    void runOnFunction() final;
+    void runOnOperation() final;
     
-    bool checkUseONEAPI(Operation* op) const {
-//        std::cout << "checkUseONEAPI: " << op->getName().getStringRef().str() << std::endl;
+    static bool checkUseONEAPI(Operation* op) {
         return op->hasTrait<mlir::OpTrait::ONEAPISupport>();
     }
 };
 
-void MarkONEAPIOpsPass::runOnFunction() {
-    getFunction()->walk([&](Operation* op) {
+void MarkONEAPIOpsPass::runOnOperation() {
+    getOperation()->walk([&](Operation* op) {
         OpBuilder builder(op);
         if(checkUseONEAPI(op)) {
             op->setAttr("oneapi_device", builder.getI32IntegerAttr(0));

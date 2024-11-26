@@ -34,7 +34,6 @@
 #include "mlir/Transforms/DialectConversion.h"
 #include "llvm/ADT/ArrayRef.h"
 
-#include <iostream>
 #include <memory>
 #include <sstream>
 #include <stdexcept>
@@ -425,6 +424,8 @@ class KernelReplacement : public RewritePattern {
                 backend = "CUDA";
             else if (op->hasAttr("fpgaopencl_device"))
                 backend = "FPGAOPENCL";
+            else if(op->hasAttr("oneapi_device"))
+                backend = "ONEAPI";
             else
                 backend = "CPP";
 
