@@ -313,8 +313,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
             clEnumVal(mlir_codegen_sparsity_exploiting_op_fusion,
                       "Show DaphneIR after MLIR codegen (sparsity-exploiting operator fusion)"),
             clEnumVal(mlir_codegen_daphneir_to_mlir, "Show DaphneIR after MLIR codegen (DaphneIR to MLIR)"),
-            clEnumVal(mlir_codegen_mlir_specific, "Show DaphneIR after MLIR codegen (MLIR-specific)"),
-            clEnumVal(llvm, "Show DaphneIR after llvm lowering")),
+            clEnumVal(mlir_codegen_mlir_specific, "Show DaphneIR after MLIR codegen (MLIR-specific)")),
         CommaSeparated);
 
     static llvm::cl::list<string> scriptArgs1("args", cat(daphneOptions),
