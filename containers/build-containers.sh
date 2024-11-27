@@ -156,4 +156,15 @@ IMAGE_REPO=daphneeu/$DAPHNE_TARGET
 build_daphne -dev-hpc
 $USE_SUDO docker tag $IMAGE_REPO:$DAPHNE_TAG daphneeu/daphne-dev:latest_${ARCH}_HPC
 
+#------------------------------------------------------------------------------
+# Images for DAPHNE development (OneAPI)
+#------------------------------------------------------------------------------
+DAPHNE_TARGET=daphne-dev
+ONEAPI_TAG=${oneapiVersion}-devel-ubuntu${ubuntuVersion}
+BASE_IMAGE=intel/oneapi-basekit:$ONEAPI_TAG
+DAPHNE_TAG=${TIMESTAMP_DATE}_${ARCH}_ONEAPI_${ONEAPI_TAG}
+IMAGE_REPO=daphneeu/$DAPHNE_TARGET
+build_daphne -dev
+$USE_SUDO docker tag $IMAGE_REPO:$DAPHNE_TAG daphneeu/daphne-dev:latest_${ARCH}_ONEAPI
+
 set +e
