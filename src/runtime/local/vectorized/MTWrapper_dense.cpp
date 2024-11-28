@@ -203,7 +203,8 @@ template <typename VT>
 [[maybe_unused]] void MTWrapper<DenseMatrix<VT>>::executeQueuePerDeviceType(
     std::vector<std::function<typename MTWrapper<DenseMatrix<VT>>::PipelineFunc>> funcs, DenseMatrix<VT> ***res,
     const bool *isScalar, Structure **inputs, size_t numInputs, size_t numOutputs, int64_t *outRows, int64_t *outCols,
-    VectorSplit *splits, VectorCombine *combines, DCTX(ctx), bool verbose) {
+    VectorSplit *splits, VectorCombine *combines, DCTX(ctx), bool verbose)
+{
     size_t device_task_len = 0ul;
     auto inputProps = this->getInputProperties(inputs, numInputs, splits);
     auto len = inputProps.first;
@@ -337,6 +338,7 @@ template <typename VT>
 template <typename VT>
 void MTWrapper<DenseMatrix<VT>>::combineOutputs(DenseMatrix<VT> ***&res_, DenseMatrix<VT> ***&res_cuda_,
                                                 size_t numOutputs, mlir::daphne::VectorCombine *combines, DCTX(ctx)) {
+// for (auto dev = 0; dev < ctx->cuda_contexts.size(); dev++) {
     const size_t deviceID = 0; // ToDo: multi device support
     AllocationDescriptorCUDA alloc_desc(ctx, deviceID);
     for (size_t i = 0; i < numOutputs; ++i) {
@@ -368,6 +370,7 @@ void MTWrapper<DenseMatrix<VT>>::combineOutputs(DenseMatrix<VT> ***&res_, DenseM
             DataObjectFactory::destroy(res_cuda);
         }
     }
+// }
 }
 #else
 template <typename VT>

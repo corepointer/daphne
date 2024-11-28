@@ -94,21 +94,22 @@ void *CUDAContext::getCUDNNWorkspace(size_t size) {
 
 std::unique_ptr<IContext> CUDAContext::createCudaContext(int device_id) {
 
-    auto ctx = std::unique_ptr<CUDAContext>(new CUDAContext(device_id));
+    // auto ctx = std::unique_ptr<CUDAContext>(new CUDAContext(device_id));
+    auto ctx = std::make_unique<CUDAContext>(device_id);
     ctx->logger = spdlog::get("runtime::cuda");
 
-    int device_count = -1;
-    CHECK_CUDART(cudaGetDeviceCount(&device_count));
+    // int device_count = ctx->;
+    // CHECK_CUDART(cudaGetDeviceCount(&device_count));
 
-    if (device_count < 1) {
-        ctx->logger->warn("Not creating requested CUDA context. No cuda devices available.");
-        return nullptr;
-    }
-
-    if (device_id >= device_count) {
-        ctx->logger->warn("Requested device ID {} >= device count {}", device_id, device_count);
-        return nullptr;
-    }
+    // if (device_count < 1) {
+    //     ctx->logger->warn("Not creating requested CUDA context. No cuda devices available.");
+    //     return nullptr;
+    // }
+    //
+    // if (device_id >= device_count) {
+    //     ctx->logger->warn("Requested device ID {} >= device count {}", device_id, device_count);
+    //     return nullptr;
+    // }
 
     ctx->init();
     //    return reinterpret_cast<std::unique_ptr<IContext> &&>(ctx);

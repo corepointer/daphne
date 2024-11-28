@@ -24,11 +24,12 @@ class WorkerGPU : public Worker {
     bool _verbose;
     uint32_t _fid;
     uint32_t _batchSize;
+    uint32_t _workerNumber{};
 
   public:
     // ToDo: remove compile-time verbose parameter and use logger
-    WorkerGPU(TaskQueue *tq, DCTX(dctx), bool verbose, uint32_t fid = 0, uint32_t batchSize = 100)
-        : Worker(dctx), _q(tq), _verbose(verbose), _fid(fid), _batchSize(batchSize) {
+    WorkerGPU(TaskQueue *tq, DCTX(dctx), bool verbose, uint32_t workerNum, uint32_t fid = 0, uint32_t batchSize = 100)
+        : Worker(dctx), _q(tq), _verbose(verbose), _fid(fid), _batchSize(batchSize), _workerNumber((workerNum)) {
         // at last, start the thread
         t = std::make_unique<std::thread>(&WorkerGPU::run, this);
     }
@@ -36,10 +37,12 @@ class WorkerGPU : public Worker {
     ~WorkerGPU() override = default;
 
     void run() override {
+        DaphneContext::setDeviceID(_workerNumber);
+
         Task *t = _q->dequeueTask();
 
         while (!isEOF(t)) {
-            // execute self-contained task
+            // execute self-contained taske
             if (_verbose)
                 ctx->logger->trace("WorkerGPU: executing task.");
             t->execute(_fid, _batchSize);

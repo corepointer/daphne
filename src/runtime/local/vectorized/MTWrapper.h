@@ -28,7 +28,6 @@
 #include <runtime/local/vectorized/WorkerCPU.h>
 #include <runtime/local/vectorized/WorkerGPU.h>
 
-#include <spdlog/fmt/ranges.h>
 #include <spdlog/spdlog.h>
 
 #include <functional>
@@ -91,8 +90,9 @@ template <typename DT> class MTWrapperBase {
 #ifdef USE_CUDA
     void initCUDAWorkers(TaskQueue *q, uint32_t batchSize, bool verbose = false) {
         cuda_workers.resize(_numCUDAThreads);
+        uint32_t workerNum = 0;
         for (auto &w : cuda_workers)
-            w = std::make_unique<WorkerGPU>(q, _ctx, verbose, 1, batchSize);
+            w = std::make_unique<WorkerGPU>(q, _ctx, verbose, workerNum++, 1, batchSize);
     }
 
     void cudaPrefetchInputs(Structure **inputs, uint32_t numInputs, size_t mem_required,

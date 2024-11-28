@@ -21,7 +21,6 @@
 #include <util/Statistics.h>
 #include <util/StringRefCount.h>
 
-#include <iostream>
 #include <memory>
 #include <vector>
 
@@ -35,6 +34,8 @@
 // we can change the ubiquitous DaphneContext parameter in a single place, if
 // required.
 #define DCTX(varname) DaphneContext *varname
+
+inline thread_local uint32_t device_id = 0;
 
 /**
  * @brief This class carries all kinds of run-time context information.
@@ -62,7 +63,7 @@ struct DaphneContext {
      * @brief The user configuration (including information passed via CLI
      * arguments etc.).
      *
-     * Modifying the configuration is intensionally allowed, since it enables
+     * Modifying the configuration is intentionally allowed, since it enables
      * changing the configuration at run-time via DaphneDSL.
      */
     DaphneUserConfig &config;
@@ -98,14 +99,13 @@ struct DaphneContext {
     // ToDo: in a multi device setting this should use a find call instead of a
     // direct [] access
     [[nodiscard]] FPGAContext *getFPGAContext(int dev_id) const {
-        //	std::cout<<"inside getFPGAContext"<<std::endl;
         return dynamic_cast<FPGAContext *>(fpga_contexts[dev_id].get());
     }
 #endif
 
-    void startKernelTimer(int kId) { stats.startKernelTimer(kId); }
+    void startKernelTimer(const int kId) const { stats.startKernelTimer(kId); }
 
-    void stopKernelTimer(int kId) { stats.stopKernelTimer(kId); }
+    void stopKernelTimer(const int kId) const { stats.stopKernelTimer(kId); }
 
     [[nodiscard]] bool useCUDA() const { return !cuda_contexts.empty(); }
     [[nodiscard]] bool useFPGA() const { return !fpga_contexts.empty(); }
@@ -116,4 +116,7 @@ struct DaphneContext {
 #endif
 
     [[nodiscard]] DaphneUserConfig &getUserConfig() const { return config; }
+
+    static uint32_t getDeviceID() { return device_id; }
+    static void setDeviceID(const uint32_t id) { device_id = id; }
 };

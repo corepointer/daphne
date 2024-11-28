@@ -528,6 +528,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
                          "device found");
         else {
             user_config.use_cuda = true;
+            user_config.available_cuda_devices = device_count;
         }
     }
 
