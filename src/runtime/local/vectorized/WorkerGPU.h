@@ -38,6 +38,7 @@ class WorkerGPU : public Worker {
 
     void run() override {
         DaphneContext::setDeviceID(_workerNumber);
+        CHECK_CUDART(cudaSetDevice(device_id));
 
         Task *t = _q->dequeueTask();
 
