@@ -12,13 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-# TODO add comments
 x=$x;
 y=$y;
+
+# Initialize test inputs
 X = rand(x, y, 0.0f, 2000, 1, 12345);
 Y = rand(y, x, 0.0f, 2000, 1, 67890);
-# Calculate the sum over the matrix.
+
+# Calculate the matrix product
 s = X @ Y;
 z = sum(s);
+
 # Print the sum.
 print(z);
+
+
+
