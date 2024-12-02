@@ -20,7 +20,8 @@
 printf "${USER} ALL=(ALL:ALL) NOPASSWD:ALL" | sudo EDITOR="tee -a" visudo #>> /dev/null
 mkdir -p /home/"$USER"/.ssh
 chmod 700 /home/"$USER"/.ssh
-touch /home/"$USER"/.sudo_as_admin_successful
+chown $USER /home/"$USER"/.ssh
+sudo -u $USER  touch /home/"$USER"/.sudo_as_admin_successful
 # set a default password
 SALT=$(date +%M%S)
 PASS=Docker!"$SALT"
