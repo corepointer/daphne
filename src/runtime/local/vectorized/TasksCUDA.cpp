@@ -69,7 +69,9 @@ void CompiledPipelineTaskCUDA<DenseMatrix<VT>>::accumulateOutputs(std::vector<De
 
     // TODO: in-place computation via better compiled pipelines
     // TODO: multi-return
-    const size_t deviceID = 0; // ToDo: multi device support
+    // const size_t deviceID = 0; // ToDo: multi device support
+    const size_t deviceID = _data._ctx->getDeviceID();
+
     AllocationDescriptorCUDA alloc_desc(_data._ctx, deviceID);
     for (auto o = 0u; o < _data._numOutputs; ++o) {
         auto &result = (*_res[o]);
