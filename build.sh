@@ -932,9 +932,8 @@ if [ $WITH_DEPS -gt 0 ]; then
     if ! is_dependency_downloaded "spdlog_v${spdlogVersion}"; then
         rm -rf "${sourcePrefix:?}/${spdlogDirName}"
         # changed URL scheme due to  temporarily use tip of main branch (2024-10-03)
-#        wget "https://github.com/gabime/spdlog/archive/refs/tags/v$spdlogVersion.tar.gz" -qO \
-        wget https://github.com/gabime/spdlog/archive/$spdlogVersion.tar.gz -qO \
-            "$cacheDir/$spdlogArtifactFileName"
+        #wget "https://github.com/gabime/spdlog/archive/refs/tags/v$spdlogVersion.tar.gz" -O "$cacheDir/$spdlogArtifactFileName"
+        wget https://github.com/gabime/spdlog/archive/$spdlogVersion.tar.gz -qO "$cacheDir/$spdlogArtifactFileName"
         tar xzf "$cacheDir/$spdlogArtifactFileName" --directory="$sourcePrefix"
         dependency_download_success "spdlog_v${spdlogVersion}"
     fi
