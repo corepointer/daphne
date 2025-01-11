@@ -66,8 +66,11 @@ template <class DT> struct CompiledPipelineTaskData {
 
     [[maybe_unused]] CompiledPipelineTaskData<DT> withDifferentRange(uint64_t newRl, uint64_t newRu) {
         CompiledPipelineTaskData<DT> flatCopy = *this;
-        flatCopy._rl = newRl;
-        flatCopy._ru = newRu;
+        // ToDo: this just fixed comilation - remove and make proper copy
+        auto& tmp1 = const_cast<uint64_t>(flatCopy._rl);
+        tmp1 = newRl;
+        auto& tmp2 = const_cast<uint64_t>(flatCopy._ru);
+        tmp2 = newRu;
         return flatCopy;
     }
 };
