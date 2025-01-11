@@ -39,7 +39,7 @@ set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3")
 set(CMAKE_CXX_FLAGS_RELWITHDEBINFO "${CMAKE_CXX_FLAGS_RELWITHDEBINFO} -g -O3 -fno-omit-frame-pointer")
 
 # silence a warning about DEPFILE path transformations (used in LLVM)
-cmake_policy(SET CMP0116 OLD)
+#cmake_policy(SET CMP0116 OLD)
 
 # *****************************************************************************
 # Related to MLIR/LLVM
