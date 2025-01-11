@@ -3982,10 +3982,12 @@
             [["DenseMatrix", "double"]],
             [["DenseMatrix", "int64_t"]],
             [["DenseMatrix", "uint8_t"]],
+            [["DenseMatrix", "uint32_t"]],
             [["DenseMatrix", "std::string"]],
             [["CSRMatrix", "double"]],
             [["CSRMatrix", "float"]],
             [["CSRMatrix", "int64_t"]],
+            [["CSRMatrix", "uint32_t"]],
             ["Frame"]
         ]
     },

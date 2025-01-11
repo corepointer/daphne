@@ -40,6 +40,7 @@ p = fill(1.0, M, 1);
 alpha = $alpha;
 max_iteration = as.si64($maxiter);
 iter = 0;
+print("Input dimension: ",0,0); print(M,0,0);print("x",0,0);print(N);
 t1 = now();
 
 for (iter in 1:max_iteration) {
