@@ -18,6 +18,7 @@
 
 #include "Worker.h"
 #include <runtime/local/vectorized/TaskQueues.h>
+#include "runtime/local/kernels/CUDA/HostUtils.h"
 
 class WorkerGPU : public Worker {
     TaskQueue *_q;

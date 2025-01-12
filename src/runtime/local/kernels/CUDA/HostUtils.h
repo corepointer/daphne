@@ -25,7 +25,6 @@
 
 #include <fmt/format.h>
 
-#include <iostream>
 #include <memory>
 
 static auto format_as(cudaError_t e) { return fmt::underlying(e); }
