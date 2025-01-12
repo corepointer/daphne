@@ -518,7 +518,7 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
         }
 #endif
     }
-    if (cuda) {
+    if (cuda || user_config.use_cuda) {
         int device_count = 0;
 #ifdef USE_CUDA
         CHECK_CUDART(cudaGetDeviceCount(&device_count));
