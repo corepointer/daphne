@@ -25,11 +25,11 @@ verbose = true;
 t0 = now();
 
 # G: N x M, p: M x 1, e: N x 1: u: 1 x M
-M = as.si64($M);
-N = as.si64($N);
+# M = as.si64($M);
+# N = as.si64($N);
 
-G = rand(M, N, 1.0, 1.0, 0.000314159, 42);
-#G = readMatrix($G);
+# G = rand(M, N, 1.0, 1.0, 0.000314159, 42);
+G = readMatrix($G);
 M = nrow(G);
 N = ncol(G);
 # p = rand(M, 1, 1.0, 1.0, 1.0, 43);
@@ -59,8 +59,7 @@ for (iter in 1:max_iteration) {
 t2 = now();
 
 # write vertex assignment
-#writeMatrix(p, "pr-out.csv");
-print(sum(p));
+writeMatrix(p, "pr-out.csv");
 t3 = now();
 
 
