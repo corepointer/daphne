@@ -109,7 +109,8 @@ namespace CUDA {
     template<typename VTRes, typename VTArg>
     VTRes AggAll<VTRes, DenseMatrix<VTArg>>::apply(AggOpCode opCode, const DenseMatrix<VTArg> * arg, DCTX(dctx)) {
 
-        const size_t deviceID = 0; //ToDo: multi device support
+        // const size_t deviceID = 0; //ToDo: multi device support
+        const size_t deviceID = dctx->getDeviceID();
         auto ctx = CUDAContext::get(dctx, deviceID);
 
         AllocationDescriptorCUDA alloc_desc(dctx, deviceID);

@@ -92,7 +92,8 @@ namespace CUDA {
     template<typename VTres, typename VTlhs, typename VTrhs>
     void EwBinaryMat<DenseMatrix<VTres>, DenseMatrix<VTlhs>, DenseMatrix<VTrhs>>::apply(BinaryOpCode opCode,
             DenseMatrix<VTres> *&res, const DenseMatrix<VTlhs> *lhs, const DenseMatrix<VTrhs> *rhs, DCTX(dctx)) {
-        const size_t deviceID = 0; //ToDo: multi device support
+        // const size_t deviceID = 0; //ToDo: multi device support
+        const size_t deviceID = dctx->getDeviceID();
         auto ctx = CUDAContext::get(dctx, deviceID);
         AllocationDescriptorCUDA alloc_desc(dctx, deviceID);
 
