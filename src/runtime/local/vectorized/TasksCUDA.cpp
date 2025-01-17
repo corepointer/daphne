@@ -127,3 +127,4 @@ template <typename VT> uint64_t CompiledPipelineTaskCUDA<DenseMatrix<VT>>::getTa
 template class CompiledPipelineTaskCUDA<DenseMatrix<double>>;
 template class CompiledPipelineTaskCUDA<DenseMatrix<float>>;
 template class CompiledPipelineTaskCUDA<DenseMatrix<int64_t>>;
+template class CompiledPipelineTaskCUDA<DenseMatrix<uint64_t>>;

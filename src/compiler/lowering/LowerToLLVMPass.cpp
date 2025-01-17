@@ -728,6 +728,7 @@ class VectorizedPipelineOpLowering : public OpConversionPattern<daphne::Vectoriz
             auto m32type = rewriter.getF32Type();
             auto m64type = rewriter.getF64Type();
             auto msi64type = rewriter.getIntegerType(64, true);
+            auto mui64type = rewriter.getIntegerType(64, false);
 
             auto res_elem_type = op->getResult(0).getType().dyn_cast<mlir::daphne::MatrixType>().getElementType();
             if (res_elem_type == m64type)
@@ -736,6 +737,8 @@ class VectorizedPipelineOpLowering : public OpConversionPattern<daphne::Vectoriz
                 operandType = daphne::MatrixType::get(getContext(), m32type);
             else if (res_elem_type == msi64type)
                 operandType = daphne::MatrixType::get(getContext(), msi64type);
+            else if (res_elem_type == mui64type)
+                operandType = daphne::MatrixType::get(getContext(), mui64type);
             else {
                 std::string str;
                 llvm::raw_string_ostream output(str);

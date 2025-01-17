@@ -181,6 +181,7 @@ template <typename VT> uint64_t CompiledPipelineTask<CSRMatrix<VT>>::getTaskSize
 template class CompiledPipelineTask<DenseMatrix<double>>;
 template class CompiledPipelineTask<DenseMatrix<float>>;
 template class CompiledPipelineTask<DenseMatrix<int64_t>>;
+template class CompiledPipelineTask<DenseMatrix<uint64_t>>;
 
 template class CompiledPipelineTask<CSRMatrix<double>>;
 template class CompiledPipelineTask<CSRMatrix<float>>;
