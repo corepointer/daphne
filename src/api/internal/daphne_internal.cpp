@@ -378,7 +378,8 @@ int startDAPHNE(int argc, const char **argv, DaphneLibResult *daphneLibRes, int 
     if (not logger)
         logger = std::make_unique<DaphneLogger>(user_config);
 
-    user_config.use_vectorized_exec = useVectorizedPipelines;
+    if (useVectorizedPipelines)
+        user_config.use_vectorized_exec = useVectorizedPipelines;
     user_config.use_distributed = useDistributedRuntime;
     user_config.use_obj_ref_mgnt = !noObjRefMgnt;
     user_config.use_ipa_const_propa = !noIPAConstPropa;
